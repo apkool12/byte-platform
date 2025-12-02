@@ -15,6 +15,7 @@ export const getCurrentUser = (): Member | null => {
     department: user.department || '',
     phone: '',
     active: true,
+    approved: (user as any).approved ?? true, // 기본값은 true (기존 사용자는 승인된 것으로 간주)
   };
 };
 
