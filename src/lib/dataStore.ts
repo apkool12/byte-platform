@@ -689,29 +689,16 @@ export async function initializeData() {
     return crypto.createHash("sha256").update(password).digest("hex");
   }
 
-  // 초기 관리자 계정
+  // 초기 회장 계정
   await prisma.user.create({
     data: {
-      name: "김철수",
-      email: "admin@byte.kr",
-      password: hashPassword("password123"),
-      studentId: "20201234",
+      name: "우은식",
+      email: "apkool12@naver.com",
+      password: hashPassword("Live_050822!@"),
+      studentId: "",
       role: "회장",
       department: "총관리",
-      phone: "010-1234-5678",
-      active: true,
-    },
-  });
-
-  await prisma.user.create({
-    data: {
-      name: "이영희",
-      email: "lee@byte.kr",
-      password: hashPassword("password123"),
-      studentId: "20215678",
-      role: "부회장",
-      department: "총관리",
-      phone: "010-5678-1234",
+      phone: "",
       active: true,
     },
   });
