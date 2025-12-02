@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Eye, EyeOff, Lock } from "lucide-react";
 import { useState } from "react";
+import { getCurrentUser } from "@/utils/permissions";
+import { authApi_extended } from "@/lib/api";
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -206,13 +208,13 @@ export default function PasswordModal({ isOpen, onClose }: PasswordModalProps) {
       }
 
       await authApi_extended.changePassword(
-        passwordData.currentPassword,
-        passwordData.newPassword,
+        formData.currentPassword,
+        formData.newPassword,
         currentUser.id
       );
 
       alert("비밀번호가 변경되었습니다.");
-      setPasswordData({
+      setFormData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
