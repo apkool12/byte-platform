@@ -332,6 +332,13 @@ class DataStore {
     });
     return events.map(event => ({
       ...event,
+      description: event.description ?? undefined,
+      endDate: event.endDate ?? undefined,
+      endTime: event.endTime ?? undefined,
+      location: event.location ?? undefined,
+      category: event.category ?? undefined,
+      color: event.color ?? undefined,
+      createdBy: event.createdBy ?? undefined,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
     }));
@@ -344,6 +351,13 @@ class DataStore {
     if (!event) return undefined;
     return {
       ...event,
+      description: event.description ?? undefined,
+      endDate: event.endDate ?? undefined,
+      endTime: event.endTime ?? undefined,
+      location: event.location ?? undefined,
+      category: event.category ?? undefined,
+      color: event.color ?? undefined,
+      createdBy: event.createdBy ?? undefined,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
     };
