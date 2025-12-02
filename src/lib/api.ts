@@ -81,6 +81,13 @@ export const usersApi = {
       method: 'DELETE',
     });
   },
+
+  approve: async (id: number, approved: boolean) => {
+    return fetchApi<{ user: any; message: string }>(`/users/${id}/approve`, {
+      method: 'PUT',
+      body: JSON.stringify({ approved }),
+    });
+  },
 };
 
 // 게시글 API
