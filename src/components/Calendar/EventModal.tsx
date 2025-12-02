@@ -257,6 +257,40 @@ const HintText = styled.div`
   border-radius: 8px;
 `;
 
+const CheckboxGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const DepartmentCheckboxes = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #fbfbfd;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f5f5f7;
+    border-color: #1d1d1f;
+  }
+`;
+
 export default function EventModal({
   isOpen,
   onClose,
