@@ -385,6 +385,14 @@ class DataStore {
     });
     return {
       ...newEvent,
+      description: newEvent.description ?? undefined,
+      endDate: newEvent.endDate ?? undefined,
+      endTime: newEvent.endTime ?? undefined,
+      location: newEvent.location ?? undefined,
+      category: (newEvent.category ?? undefined) as ApiEvent['category'],
+      color: newEvent.color ?? undefined,
+      postId: newEvent.postId ?? undefined,
+      createdBy: newEvent.createdBy ?? undefined,
       createdAt: newEvent.createdAt.toISOString(),
       updatedAt: newEvent.updatedAt.toISOString(),
     };
