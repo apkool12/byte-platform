@@ -1,0 +1,94 @@
+// Prisma 스키마 파일
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String    @unique
+  password    String    // 해시된 비밀번호
+  studentId   String
+  role        String    // '회장' | '부회장' | '부장' | '부원'
+  department  String
+  phone       String    @default("")
+  active      Boolean   @default(true)
+  profileImage String?  @db.Text
+  createdAt   DateTime  @default(now())
+  
+  posts       Post[]
+  agendas     Agenda[]
+  
+  @@map("users")
+}
+
+model Post {
+  id                  Int       @id @default(autoincrement())
+  title               String
+  content             String    @db.Text
+  author              String
+  authorId            Int
+  department          String
+  createdAt           DateTime  @default(now())
+  views               Int       @default(0)
+  category            String    // '공지' | '일반' | '회의록'
+  pinned              Boolean   @default(false)
+  attachments         String[]  @default([])
+  
+  // 권한 설정 (JSON으로 저장)
+  permissionRead      String?   // '전체' | '부장 이상' | '특정 부서' | '작성자만'
+  permissionWrite     String?
+  allowedDepartments  String[]
+  
+  authorUser          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@map("posts")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?   @db.Text
+  date        String    // yyyy-MM-dd 형식
+  endDate     String?
+  startTime   String    @default("09:00")
+  endTime     String?
+  location    String?
+  category    String?   // '회의' | '행사' | '일정' | '기타'
+  color       String?
+  postId      Int?
+  noTime      Boolean   @default(false)
+  isPeriod    Boolean   @default(false)
+  createdBy   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("events")
+}
+
+model Agenda {
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String    @db.Text
+  category        String    // '회의안건' | '의결사항' | '논의사항' | '기타'
+  status          String    // '진행중' | '완료' | '보류'
+  priority        String    // '높음' | '보통' | '낮음'
+  assignedTo      String?
+  department      String?
+  relatedPostId   Int?
+  relatedEventId  String?
+  createdBy       String
+  createdById     Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  createdByUser   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  
+  @@map("agendas")
+}
+
