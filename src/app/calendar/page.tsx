@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, parse, isWithinInterval } from 'date-fns';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { CalendarEvent } from '@/types/calendar';
@@ -219,26 +219,45 @@ export default function CalendarPage() {
   const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const eventsResponse = await eventsApi.getAll();
-        setEvents(eventsResponse.events);
-        
-        const postsResponse = await postsApi.getAll();
-        setPosts(postsResponse.posts);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-    };
-
-    fetchData();
+  const fetchData = useCallback(async () => {
+    try {
+      const eventsResponse = await eventsApi.getAll();
+      setEvents(eventsResponse.events);
+      
+      const postsResponse = await postsApi.getAll();
+      setPosts(postsResponse.posts);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // 일정 업데이트 이벤트 리스너
+  useEffect(() => {
+    const handleEventsUpdate = () => {
+      fetchData();
+    };
+
+    window.addEventListener('eventsUpdated', handleEventsUpdate);
+    return () => {
+      window.removeEventListener('eventsUpdated', handleEventsUpdate);
+    };
+  }, [fetchData]);
+
   // 현재 사용자 정보 가져오기 (부서 필터링용)
-  const currentUser = typeof window !== 'undefined' 
-    ? JSON.parse(localStorage.getItem('currentUser') || 'null')
-    : null;
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userStr = localStorage.getItem('currentUser');
+      if (userStr) {
+        setCurrentUser(JSON.parse(userStr));
+      }
+    }
+  }, []);
 
   // 날짜별 이벤트 그룹화 (기간 일정 포함, 부서 필터링)
   const eventsByDate = useMemo(() => {
@@ -252,7 +271,10 @@ export default function CalendarPage() {
       }
       
       const start = parse(event.date, 'yyyy-MM-dd', new Date());
-      const end = event.endDate ? parse(event.endDate, 'yyyy-MM-dd', new Date()) : start;
+      // 기간 일정인 경우 endDate까지, 아니면 시작일만
+      const end = (event.isPeriod && event.endDate) 
+        ? parse(event.endDate, 'yyyy-MM-dd', new Date()) 
+        : start;
       
       // 기간 내 모든 날짜에 이벤트 추가
       const dates = eachDayOfInterval({ start, end });
@@ -327,8 +349,11 @@ export default function CalendarPage() {
       }
 
       // 이벤트 목록 새로고침
-      const response = await eventsApi.getAll();
-      setEvents(response.events);
+      await fetchData();
+      
+      // 전역 이벤트 발생하여 다른 컴포넌트에도 알림
+      window.dispatchEvent(new Event('eventsUpdated'));
+      
       setIsModalOpen(false);
       setSelectedDate(null);
       setSelectedEvent(null);
@@ -342,8 +367,13 @@ export default function CalendarPage() {
     
     try {
       await eventsApi.delete(eventId);
-      const response = await eventsApi.getAll();
-      setEvents(response.events);
+      
+      // 이벤트 목록 새로고침
+      await fetchData();
+      
+      // 전역 이벤트 발생하여 다른 컴포넌트에도 알림
+      window.dispatchEvent(new Event('eventsUpdated'));
+      
       setIsModalOpen(false);
       setSelectedDate(null);
       setSelectedEvent(null);

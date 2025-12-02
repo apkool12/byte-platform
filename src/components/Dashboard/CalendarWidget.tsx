@@ -277,6 +277,16 @@ export default function CalendarWidget() {
     };
 
     fetchEvents();
+
+    // 일정 업데이트 이벤트 리스너
+    const handleEventsUpdate = () => {
+      fetchEvents();
+    };
+
+    window.addEventListener('eventsUpdated', handleEventsUpdate);
+    return () => {
+      window.removeEventListener('eventsUpdated', handleEventsUpdate);
+    };
   }, [isMounted, currentDate]);
 
   const getEventsForDay = (day: Date) => {
