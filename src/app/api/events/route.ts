@@ -85,25 +85,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!noTime && !startTime) {
-      return NextResponse.json(
-        { error: '시작 시간은 필수 항목입니다.' },
-        { status: 400 }
-      );
-    }
+    // 시간이 없으면 자동으로 noTime으로 처리
+    const shouldNoTime = !startTime || noTime;
 
     const newEvent = await dataStore.addEvent({
       title,
       description,
       date,
       endDate,
-      startTime: noTime ? '' : (startTime || ''),
-      endTime: noTime ? undefined : endTime,
+      startTime: shouldNoTime ? '' : (startTime || ''),
+      endTime: shouldNoTime ? undefined : endTime,
       location,
       category: category || '기타',
       color: color || '#1d1d1f',
       postId,
-      noTime: noTime || false,
+      noTime: shouldNoTime,
       isPeriod: isPeriod || false,
       createdBy: body.createdBy,
       allowedDepartments: allowedDepartments || [],

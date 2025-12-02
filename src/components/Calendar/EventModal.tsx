@@ -368,14 +368,17 @@ export default function EventModal({
       alert("제목과 날짜는 필수 항목입니다.");
       return;
     }
-    if (!formData.noTime && !formData.startTime) {
-      alert("시간을 설정하거나 '시간 설정 없음'을 선택해주세요.");
-      return;
-    }
+    
+    // 시간이 없으면 자동으로 noTime으로 처리
+    const shouldNoTime = !formData.startTime || formData.noTime;
+    
     if (formData.isPeriod && !formData.endDate) {
       alert("여러 날짜에 걸친 일정인 경우 종료 날짜를 입력해주세요.");
       return;
     }
+
+    // 시간이 없으면 자동으로 noTime으로 처리
+    const shouldNoTime = !formData.startTime || formData.noTime;
 
     const eventData: Omit<CalendarEvent, "id"> = {
       title: formData.title,
@@ -383,8 +386,8 @@ export default function EventModal({
       date: formData.date,
       endDate:
         formData.isPeriod && formData.endDate ? formData.endDate : undefined,
-      startTime: formData.noTime ? "" : formData.startTime,
-      endTime: formData.noTime ? undefined : formData.endTime || undefined,
+      startTime: shouldNoTime ? "" : formData.startTime,
+      endTime: shouldNoTime ? undefined : formData.endTime || undefined,
       location: formData.location || undefined,
       category: formData.category,
       postId: formData.postId,
@@ -646,7 +649,6 @@ export default function EventModal({
                   disabled={
                     !formData.title ||
                     !formData.date ||
-                    (!formData.noTime && !formData.startTime) ||
                     (formData.isPeriod && !formData.endDate)
                   }
                 >
