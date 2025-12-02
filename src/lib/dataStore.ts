@@ -631,17 +631,25 @@ class DataStore {
         where: { id },
         data: updateData,
       });
+      const createdByUser = await prisma.user.findUnique({
+        where: { id: updated.createdById },
+      });
+      
       return {
-        ...updated,
-        createdAt: updated.createdAt.toISOString(),
-        updatedAt: updated.updatedAt.toISOString(),
-        category: updated.category as
-          | "회의안건"
-          | "의결사항"
-          | "논의사항"
-          | "기타",
+        id: updated.id,
+        title: updated.title,
+        description: updated.description,
+        category: updated.category as "회의안건" | "의결사항" | "논의사항" | "기타",
         status: updated.status as "진행중" | "완료" | "보류",
         priority: updated.priority as "높음" | "보통" | "낮음",
+        assignedTo: updated.assignedTo ?? undefined,
+        department: updated.department ?? undefined,
+        relatedPostId: updated.relatedPostId ?? undefined,
+        relatedEventId: updated.relatedEventId ?? undefined,
+        createdBy: createdByUser?.name || updated.createdBy,
+        createdById: updated.createdById,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.updatedAt.toISOString(),
       };
     } catch {
       return null;
