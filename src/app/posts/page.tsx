@@ -237,6 +237,11 @@ export default function PostsPage() {
   }, [hasAnimated]);
 
   const handleCreatePost = async (postData: Omit<Post, 'id' | 'createdAt' | 'views' | 'author' | 'department'>) => {
+    if (!currentUser) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    
     try {
       await postsApi.create({
         ...postData,

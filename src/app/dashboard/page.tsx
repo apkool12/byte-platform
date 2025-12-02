@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import PostList from '@/components/Dashboard/PostList';
 import CalendarWidget from '@/components/Dashboard/CalendarWidget';
 import { Users, Calendar, FileText, ArrowUpRight, Zap } from 'lucide-react';
@@ -127,13 +127,13 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 10
     }
@@ -142,7 +142,7 @@ const itemVariants = {
     y: -5,
     boxShadow: "0 12px 24px rgba(0, 0, 0, 0.1)",
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 400,
       damping: 25
     }
