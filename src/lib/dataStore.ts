@@ -83,6 +83,8 @@ class DataStore {
     return users.map(({ password, ...user }) => ({
       ...user,
       password: undefined,
+      role: user.role as ApiUser['role'],
+      profileImage: user.profileImage ?? undefined,
       createdAt: user.createdAt.toISOString(),
     }));
   }
@@ -96,6 +98,8 @@ class DataStore {
       return {
         ...userWithoutPassword,
         password: undefined,
+        role: user.role as ApiUser['role'],
+        profileImage: user.profileImage ?? undefined,
         createdAt: user.createdAt.toISOString(),
       } as ApiUser;
     });
@@ -110,6 +114,8 @@ class DataStore {
     return {
       ...userWithoutPassword,
       password: undefined,
+      role: user.role as ApiUser['role'],
+      profileImage: user.profileImage ?? undefined,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
