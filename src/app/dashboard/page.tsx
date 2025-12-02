@@ -116,7 +116,7 @@ const ActionButton = styled(motion.button)`
 `;
 
 // Animation Variants
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,

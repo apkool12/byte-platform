@@ -2,7 +2,7 @@
 
 import styled from 'styled-components';
 import { MoreHorizontal } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { postsApi } from '@/lib/api';
@@ -71,7 +71,7 @@ const Badge = styled.span`
 `;
 
 
-const listVariants = {
+const listVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -81,13 +81,13 @@ const listVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { x: -20, opacity: 0 },
   visible: { 
     x: 0, 
     opacity: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100
     }
   }

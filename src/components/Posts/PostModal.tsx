@@ -284,7 +284,10 @@ export default function PostModal({ isOpen, onClose, onSubmit, members = [], ini
         content: initialData.content || '',
         category: initialData.category || '일반',
         pinned: initialData.pinned || false,
-        permission: initialData.permission || {
+        permission: initialData.permission ? {
+          read: initialData.permission.read,
+          allowedDepartments: initialData.permission.allowedDepartments || [],
+        } : {
           read: '전체',
           allowedDepartments: [],
         },

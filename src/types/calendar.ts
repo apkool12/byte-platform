@@ -10,6 +10,8 @@ export interface CalendarEvent {
   category?: '회의' | '행사' | '일정' | '기타';
   color?: string;
   postId?: number; // 연결된 게시글 ID
+  noTime?: boolean;
+  isPeriod?: boolean;
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;

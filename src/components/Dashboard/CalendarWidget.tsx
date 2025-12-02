@@ -332,7 +332,7 @@ export default function CalendarWidget() {
                 {dayEvents.length > 0 && (
                   <EventIndicator>
                     {dayEvents.map((event, idx) => (
-                      <Dot key={idx} $color={event.color} />
+                      <Dot key={idx} $color={event.color || '#3b82f6'} />
                     ))}
                   </EventIndicator>
                 )}
