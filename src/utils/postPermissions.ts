@@ -32,6 +32,12 @@ const getRoleLevel = (role: Member['role']): number => {
 // 읽기 권한 체크
 export const canReadPost = (post: Post, user: Member | null): boolean => {
   if (!user) return false;
+  
+  // 작성자는 항상 볼 수 있음 (권한 설정과 무관하게)
+  if (post.authorId === user.id || post.author === user.name) {
+    return true;
+  }
+  
   if (!post.permission) return true; // 권한 설정이 없으면 전체 공개
 
   const permission = post.permission.read;
@@ -50,7 +56,8 @@ export const canReadPost = (post: Post, user: Member | null): boolean => {
       return post.permission.allowedDepartments.includes(user.department);
     
     case '작성자만':
-      return post.authorId === user.id || post.author === user.name;
+      // 이미 위에서 작성자 체크를 했으므로 여기서는 false
+      return false;
     
     default:
       return false;

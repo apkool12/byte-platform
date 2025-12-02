@@ -588,12 +588,16 @@ class DataStore {
     const createdByUser = await prisma.user.findUnique({
       where: { id: newAgenda.createdById },
     });
-    
+
     return {
       id: newAgenda.id,
       title: newAgenda.title,
       description: newAgenda.description,
-      category: newAgenda.category as "회의안건" | "의결사항" | "논의사항" | "기타",
+      category: newAgenda.category as
+        | "회의안건"
+        | "의결사항"
+        | "논의사항"
+        | "기타",
       status: newAgenda.status as "진행중" | "완료" | "보류",
       priority: newAgenda.priority as "높음" | "보통" | "낮음",
       assignedTo: newAgenda.assignedTo ?? undefined,
@@ -634,12 +638,16 @@ class DataStore {
       const createdByUser = await prisma.user.findUnique({
         where: { id: updated.createdById },
       });
-      
+
       return {
         id: updated.id,
         title: updated.title,
         description: updated.description,
-        category: updated.category as "회의안건" | "의결사항" | "논의사항" | "기타",
+        category: updated.category as
+          | "회의안건"
+          | "의결사항"
+          | "논의사항"
+          | "기타",
         status: updated.status as "진행중" | "완료" | "보류",
         priority: updated.priority as "높음" | "보통" | "낮음",
         assignedTo: updated.assignedTo ?? undefined,
