@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Byte - 학생회 관리 플랫폼
 
-## Getting Started
+국립한밭대학교 컴퓨터공학과 제 42대 학생회 "Byte" 관리 플랫폼입니다.
 
-First, run the development server:
+## 주요 기능
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 👥 부원 관리
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 부원 정보 조회 및 관리
+- 부서별 필터링
+- 부원 정보 수정 및 삭제 (회장 전용)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 📝 게시판
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- 게시글 작성, 수정, 삭제
+- 카테고리별 분류 (공지, 일반, 회의록)
+- 고정 게시글 기능
+- 권한 기반 읽기/쓰기 제어
+  - 전체 공개
+  - 부장 이상만 열람
+  - 특정 부서만 열람
+  - 작성자만 열람
+- 멘션 기능 (@부원이름)
+- 첨부파일 업로드
+- 리치 텍스트 에디터 (텍스트 포맷팅, 링크, 이미지)
 
-## Learn More
+### 📅 캘린더 및 일정 관리
 
-To learn more about Next.js, take a look at the following resources:
+- 월간 캘린더 뷰
+- 일정 추가, 수정, 삭제
+- 기간 일정 지원 (시작일 ~ 종료일)
+- 시간 설정/미설정 옵션
+- 게시글과 일정 연결
+- 일정 카테고리 (회의, 행사, 일정, 기타)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📋 안건 관리
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 안건 등록 및 관리
+- 상태 추적 (진행중, 완료, 보류)
+- 우선순위 설정 (높음, 보통, 낮음)
+- 담당자 지정
+- 부서별 분류
+- 게시글/일정과 연결
 
-## Deploy on Vercel
+### 👤 프로필 및 설정
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 프로필 정보 조회 및 수정
+- 프로필 사진 업로드
+- 비밀번호 변경
+- 로그아웃
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🎯 대시보드
+
+- 전체 부원 수
+- 오늘의 일정
+- 진행중인 안건
+- 최근 게시글 목록
+- 월간 캘린더 위젯
+
+## 기술 스택
+
+- **Frontend**: Next.js 16, React 19, Styled Components, Framer Motion
+- **Backend**: Next.js API Routes
+- **Database**: PostgreSQL (Prisma ORM)
+- **Deployment**: Vercel
