@@ -13,6 +13,7 @@ export interface CalendarEvent {
   noTime?: boolean;
   isPeriod?: boolean;
   createdBy?: string;
+  allowedDepartments?: string[]; // 특정 부서만 볼 수 있도록
   createdAt?: string;
   updatedAt?: string;
 }

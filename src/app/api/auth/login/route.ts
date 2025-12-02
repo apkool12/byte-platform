@@ -52,6 +52,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 승인 여부 체크 (회장은 제외)
+    if (!user.approved && user.role !== '회장') {
+      return NextResponse.json(
+        { error: '회장 승인이 필요한 계정입니다. 승인 후 로그인 가능합니다.' },
+        { status: 403 }
+      );
+    }
+
     // 응답에서 비밀번호 제외
     const { password: _, ...userWithoutPassword } = user;
 

@@ -8,6 +8,7 @@ import { postsApi } from "@/lib/api";
 import { CalendarEvent, EVENT_CATEGORIES } from "@/types/calendar";
 import { format } from "date-fns";
 import { Post } from "@/types/post";
+import { DEPARTMENTS } from "@/types/member";
 import DateRangePicker from "./DateRangePicker";
 
 const Overlay = styled(motion.div)`
@@ -300,6 +301,7 @@ export default function EventModal({
     postId: undefined as number | undefined,
     isPeriod: false,
     noTime: false,
+    allowedDepartments: [] as string[],
   });
 
   useEffect(() => {
@@ -316,6 +318,7 @@ export default function EventModal({
         postId: event.postId,
         isPeriod: !!event.endDate,
         noTime: !event.startTime,
+        allowedDepartments: event.allowedDepartments || [],
       });
     } else if (selectedDate) {
       setFormData((prev) => ({
@@ -352,6 +355,7 @@ export default function EventModal({
       category: formData.category,
       postId: formData.postId,
       color: "#1d1d1f",
+      allowedDepartments: formData.allowedDepartments.length > 0 ? formData.allowedDepartments : undefined,
       updatedAt: new Date().toISOString(),
     };
 
@@ -375,8 +379,18 @@ export default function EventModal({
       postId: undefined,
       isPeriod: false,
       noTime: false,
+      allowedDepartments: [],
     });
     onClose();
+  };
+
+  const handleDepartmentToggle = (dept: string) => {
+    setFormData(prev => ({
+      ...prev,
+      allowedDepartments: prev.allowedDepartments.includes(dept)
+        ? prev.allowedDepartments.filter(d => d !== dept)
+        : [...prev.allowedDepartments, dept],
+    }));
   };
 
   const selectedPost = availablePosts.find((p) => p.id === formData.postId);
@@ -560,6 +574,26 @@ export default function EventModal({
                     <span>{selectedPost.title}</span>
                   </PostLink>
                 )}
+              </FormGroup>
+              <FormGroup>
+                <Label>특정 부서만 보기 (선택사항)</Label>
+                <HintText>
+                  선택한 부서에 속한 회원만 이 일정을 볼 수 있습니다. 선택하지 않으면 전체 공개됩니다.
+                </HintText>
+                <CheckboxGroup>
+                  <DepartmentCheckboxes>
+                    {DEPARTMENTS.map(dept => (
+                      <CheckboxLabel key={dept}>
+                        <Checkbox
+                          type="checkbox"
+                          checked={formData.allowedDepartments.includes(dept)}
+                          onChange={() => handleDepartmentToggle(dept)}
+                        />
+                        <span>{dept}</span>
+                      </CheckboxLabel>
+                    ))}
+                  </DepartmentCheckboxes>
+                </CheckboxGroup>
               </FormGroup>
               <ButtonGroup>
                 {onDelete && (

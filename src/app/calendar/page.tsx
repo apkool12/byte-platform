@@ -235,10 +235,22 @@ export default function CalendarPage() {
     fetchData();
   }, []);
 
-  // 날짜별 이벤트 그룹화 (기간 일정 포함)
+  // 현재 사용자 정보 가져오기 (부서 필터링용)
+  const currentUser = typeof window !== 'undefined' 
+    ? JSON.parse(localStorage.getItem('currentUser') || 'null')
+    : null;
+
+  // 날짜별 이벤트 그룹화 (기간 일정 포함, 부서 필터링)
   const eventsByDate = useMemo(() => {
     const grouped: Record<string, CalendarEvent[]> = {};
     events.forEach(event => {
+      // 부서 권한 체크
+      if (event.allowedDepartments && event.allowedDepartments.length > 0) {
+        if (!currentUser || !event.allowedDepartments.includes(currentUser.department)) {
+          return; // 부서 권한이 없으면 스킵
+        }
+      }
+      
       const start = parse(event.date, 'yyyy-MM-dd', new Date());
       const end = event.endDate ? parse(event.endDate, 'yyyy-MM-dd', new Date()) : start;
       
@@ -255,7 +267,7 @@ export default function CalendarPage() {
       });
     });
     return grouped;
-  }, [events]);
+  }, [events, currentUser]);
 
   const getEventsForDay = (day: Date): CalendarEvent[] => {
     const dateStr = format(day, 'yyyy-MM-dd');

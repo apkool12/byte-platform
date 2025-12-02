@@ -14,6 +14,7 @@ export interface ApiUser {
   department: string;
   phone: string;
   active: boolean;
+  approved: boolean;
   profileImage?: string;
   createdAt: string;
 }
@@ -52,6 +53,7 @@ export interface ApiEvent {
   noTime?: boolean;
   isPeriod?: boolean;
   createdBy?: string;
+  allowedDepartments?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -80,13 +82,17 @@ class DataStore {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return users.map(({ password, ...user }) => ({
-      ...user,
-      password: undefined,
-      role: user.role as ApiUser["role"],
-      profileImage: user.profileImage ?? undefined,
-      createdAt: user.createdAt.toISOString(),
-    }));
+    return users.map(({ password, ...user }) => {
+      const userWithApproved = user as any;
+      return {
+        ...user,
+        password: undefined,
+        role: user.role as ApiUser["role"],
+        profileImage: user.profileImage ?? undefined,
+        approved: userWithApproved.approved ?? false,
+        createdAt: user.createdAt.toISOString(),
+      };
+    });
   }
 
   getUserById(id: number): Promise<ApiUser | undefined> {
@@ -97,11 +103,13 @@ class DataStore {
       .then((user) => {
         if (!user) return undefined;
         const { password, ...userWithoutPassword } = user;
+        const userWithApproved = user as any;
         return {
           ...userWithoutPassword,
           password: undefined,
           role: user.role as ApiUser["role"],
           profileImage: user.profileImage ?? undefined,
+          approved: userWithApproved.approved ?? false,
           createdAt: user.createdAt.toISOString(),
         } as ApiUser;
       });
@@ -113,11 +121,13 @@ class DataStore {
     });
     if (!user) return undefined;
     const { password, ...userWithoutPassword } = user;
+    const userWithApproved = user as any;
     return {
       ...userWithoutPassword,
       password: undefined,
       role: user.role as ApiUser["role"],
       profileImage: user.profileImage ?? undefined,
+      approved: userWithApproved.approved ?? false,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -146,13 +156,16 @@ class DataStore {
         department: user.department,
         phone: user.phone,
         active: user.active,
+        approved: user.approved ?? false,
         profileImage: user.profileImage,
-      },
+      } as any,
     });
     const { password, ...userWithoutPassword } = newUser;
+    const newUserWithApproved = newUser as any;
     return {
       ...userWithoutPassword,
       password: undefined,
+      approved: newUserWithApproved.approved ?? false,
       createdAt: newUser.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -170,6 +183,7 @@ class DataStore {
     if (updates.department) updateData.department = updates.department;
     if (updates.phone !== undefined) updateData.phone = updates.phone;
     if (updates.active !== undefined) updateData.active = updates.active;
+    if (updates.approved !== undefined) updateData.approved = updates.approved;
     if (updates.profileImage !== undefined)
       updateData.profileImage = updates.profileImage;
 
@@ -408,6 +422,7 @@ class DataStore {
       where: { id },
     });
     if (!event) return undefined;
+    const eventWithDepts = event as any;
     return {
       ...event,
       description: event.description ?? undefined,
@@ -418,6 +433,10 @@ class DataStore {
       color: event.color ?? undefined,
       postId: event.postId ?? undefined,
       createdBy: event.createdBy ?? undefined,
+      allowedDepartments:
+        eventWithDepts.allowedDepartments?.length > 0
+          ? eventWithDepts.allowedDepartments
+          : undefined,
       createdAt: event.createdAt.toISOString(),
       updatedAt: event.updatedAt.toISOString(),
     };
@@ -441,8 +460,10 @@ class DataStore {
         noTime: event.noTime || false,
         isPeriod: event.isPeriod || false,
         createdBy: event.createdBy,
-      },
+        allowedDepartments: event.allowedDepartments || [],
+      } as any,
     });
+    const eventWithDepts = newEvent as any;
     return {
       ...newEvent,
       description: newEvent.description ?? undefined,
@@ -453,6 +474,10 @@ class DataStore {
       color: newEvent.color ?? undefined,
       postId: newEvent.postId ?? undefined,
       createdBy: newEvent.createdBy ?? undefined,
+      allowedDepartments:
+        eventWithDepts.allowedDepartments?.length > 0
+          ? eventWithDepts.allowedDepartments
+          : undefined,
       createdAt: newEvent.createdAt.toISOString(),
       updatedAt: newEvent.updatedAt.toISOString(),
     };
@@ -480,8 +505,9 @@ class DataStore {
     try {
       const updated = await prisma.event.update({
         where: { id },
-        data: updateData,
+        data: updateData as any,
       });
+      const updatedWithDepts = updated as any;
       return {
         ...updated,
         description: updated.description ?? undefined,
@@ -492,6 +518,10 @@ class DataStore {
         color: updated.color ?? undefined,
         postId: updated.postId ?? undefined,
         createdBy: updated.createdBy ?? undefined,
+        allowedDepartments:
+          updatedWithDepts.allowedDepartments?.length > 0
+            ? updatedWithDepts.allowedDepartments
+            : undefined,
         createdAt: updated.createdAt.toISOString(),
         updatedAt: updated.updatedAt.toISOString(),
       };
@@ -674,6 +704,53 @@ class DataStore {
       return false;
     }
   }
+
+  // Notifications
+  async createNotification(notification: {
+    userId: number;
+    type: "mention" | "post" | "event" | "agenda";
+    title: string;
+    message: string;
+    relatedPostId?: number;
+    relatedEventId?: string;
+    relatedAgendaId?: number;
+  }): Promise<void> {
+    await (prisma as any).notification.create({
+      data: notification,
+    });
+  }
+
+  async getNotifications(userId: number): Promise<any[]> {
+    const notifications = await (prisma as any).notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+    return notifications.map((notif: any) => ({
+      ...notif,
+      createdAt: notif.createdAt.toISOString(),
+    }));
+  }
+
+  async markNotificationAsRead(notificationId: number): Promise<void> {
+    await (prisma as any).notification.update({
+      where: { id: notificationId },
+      data: { read: true },
+    });
+  }
+
+  async markAllNotificationsAsRead(userId: number): Promise<void> {
+    await (prisma as any).notification.updateMany({
+      where: { userId, read: false },
+      data: { read: true },
+    });
+  }
+
+  async getUnreadNotificationCount(userId: number): Promise<number> {
+    return (prisma as any).notification.count({
+      where: { userId, read: false },
+    });
+  }
 }
 
 // 싱글톤 인스턴스
@@ -689,7 +766,7 @@ export async function initializeData() {
     return crypto.createHash("sha256").update(password).digest("hex");
   }
 
-  // 초기 회장 계정
+  // 초기 회장 계정 (자동 승인)
   await prisma.user.create({
     data: {
       name: "우은식",
@@ -700,6 +777,7 @@ export async function initializeData() {
       department: "총관리",
       phone: "",
       active: true,
-    },
+      approved: true, // 회장은 자동 승인
+    } as any,
   });
 }

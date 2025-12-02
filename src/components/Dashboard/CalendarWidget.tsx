@@ -282,8 +282,21 @@ export default function CalendarWidget() {
   const getEventsForDay = (day: Date) => {
     if (!isSameMonth(day, currentDate)) return [];
     if (!isMounted) return [];
+    
+    // 현재 사용자 정보 가져오기 (부서 필터링용)
+    const currentUser = typeof window !== 'undefined' 
+      ? JSON.parse(localStorage.getItem('currentUser') || 'null')
+      : null;
+    
     const dayStr = format(day, 'yyyy-MM-dd');
     return events.filter(event => {
+      // 부서 권한 체크
+      if (event.allowedDepartments && event.allowedDepartments.length > 0) {
+        if (!currentUser || !event.allowedDepartments.includes(currentUser.department)) {
+          return false;
+        }
+      }
+      
       const eventDate = format(new Date(event.date), 'yyyy-MM-dd');
       if (event.isPeriod && event.endDate) {
         const endDate = format(new Date(event.endDate), 'yyyy-MM-dd');

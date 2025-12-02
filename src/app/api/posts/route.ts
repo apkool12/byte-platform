@@ -65,6 +65,57 @@ export async function POST(request: NextRequest) {
       permission,
     });
 
+    // 알림 생성: 멘션된 사용자 및 특정 부서 사용자에게
+    try {
+      const allUsers = await dataStore.getUsers();
+      const mentionedUserIds = new Set<number>();
+      
+      // 멘션 추출 (data-mention 속성에서)
+      if (content) {
+        const mentionRegex = /<span[^>]*data-mention="(\d+)"[^>]*>@([^<]+)<\/span>/g;
+        let match;
+        while ((match = mentionRegex.exec(content)) !== null) {
+          const userId = parseInt(match[1]);
+          mentionedUserIds.add(userId);
+        }
+      }
+
+      // 멘션된 사용자에게 알림
+      for (const userId of mentionedUserIds) {
+        if (userId !== authorId) {
+          await dataStore.createNotification({
+            userId,
+            type: 'mention',
+            title: '새로운 멘션',
+            message: `${author}님이 게시글에서 당신을 언급했습니다: "${title}"`,
+            relatedPostId: newPost.id,
+          });
+        }
+      }
+
+      // 특정 부서 게시글인 경우 해당 부서 사용자에게 알림
+      if (permission?.read === '특정 부서' && permission.allowedDepartments && permission.allowedDepartments.length > 0) {
+        for (const user of allUsers) {
+          if (
+            permission.allowedDepartments.includes(user.department) &&
+            user.id !== authorId &&
+            !mentionedUserIds.has(user.id)
+          ) {
+            await dataStore.createNotification({
+              userId: user.id,
+              type: 'post',
+              title: '새로운 게시글',
+              message: `${author}님이 "${title}" 게시글을 작성했습니다.`,
+              relatedPostId: newPost.id,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Notification creation error:', error);
+      // 알림 생성 실패해도 게시글은 성공 처리
+    }
+
     return NextResponse.json(
       { post: newPost, message: '게시글이 작성되었습니다.' },
       { status: 201 }

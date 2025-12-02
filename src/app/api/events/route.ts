@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
       color, 
       postId, 
       noTime, 
-      isPeriod 
+      isPeriod,
+      allowedDepartments
     } = body;
 
     // 유효성 검사
@@ -105,6 +106,7 @@ export async function POST(request: NextRequest) {
       noTime: noTime || false,
       isPeriod: isPeriod || false,
       createdBy: body.createdBy,
+      allowedDepartments: allowedDepartments || [],
     });
 
     return NextResponse.json(

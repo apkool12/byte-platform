@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { Plus, Search, Filter, MoreHorizontal, Lock } from "lucide-react";
+import { Plus, Search, Filter, MoreHorizontal, Lock, Check, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Member, DEPARTMENTS, ROLES } from "@/types/member";
@@ -199,6 +199,53 @@ const StatusBadge = styled.span<{ $active: boolean }>`
   }
 `;
 
+const ApprovalBadge = styled.span<{ $approved: boolean }>`
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: ${({ $approved }) => ($approved ? "#E8F5E9" : "#FFF3E0")};
+  color: ${({ $approved }) => ($approved ? "#2E7D32" : "#E65100")};
+  border: 1px solid ${({ $approved }) => ($approved ? "#C8E6C9" : "#FFE0B2")};
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+`;
+
+const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s;
+  background-color: ${({ $primary, $danger }) => {
+    if ($primary) return "#1D1D1F";
+    if ($danger) return "#FF3B30";
+    return "#F5F5F7";
+  }};
+  color: ${({ $primary, $danger }) => {
+    if ($primary || $danger) return "#fff";
+    return "#1D1D1F";
+  }};
+
+  &:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 
 const AccessDenied = styled.div`
   display: flex;
@@ -280,6 +327,22 @@ export default function MembersPage() {
       filterDept === "전체" || member.department === filterDept;
     return matchesSearch && matchesFilter;
   });
+
+  // 승인 대기 중인 사용자 필터링
+  const pendingMembers = filteredMembers.filter(m => !m.approved);
+  const approvedMembers = filteredMembers.filter(m => m.approved);
+
+  const handleApprove = async (memberId: number, approved: boolean, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await usersApi.approve(memberId, approved);
+      const response = await usersApi.getAll();
+      setMembers(response.users as Member[]);
+      alert(approved ? '사용자가 승인되었습니다.' : '사용자 승인이 거부되었습니다.');
+    } catch (error: any) {
+      alert(error.message || '처리 중 오류가 발생했습니다.');
+    }
+  };
 
   const handleUpdateMember = async (updatedMember: Omit<Member, "id">) => {
     if (!selectedMember) return;
@@ -369,11 +432,64 @@ export default function MembersPage() {
               <Th>부서</Th>
               <Th>연락처</Th>
               <Th>상태</Th>
-              <Th style={{ width: "40px" }}></Th>
+              <Th>승인</Th>
+              <Th style={{ width: "120px" }}>작업</Th>
             </tr>
           </thead>
           <tbody>
-            {filteredMembers.map((member) => (
+            {pendingMembers.length > 0 && (
+              <>
+                {pendingMembers.map((member) => (
+                  <Tr
+                    key={member.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{ backgroundColor: "#FFF9E6" }}
+                  >
+                    <Td>
+                      <div style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                        {member.name}
+                      </div>
+                    </Td>
+                    <Td style={{ color: "#86868b" }}>{member.studentId}</Td>
+                    <Td>
+                      <RoleBadge $role={member.role}>{member.role}</RoleBadge>
+                    </Td>
+                    <Td>{member.department}</Td>
+                    <Td style={{ color: "#86868b" }}>{member.phone || "-"}</Td>
+                    <Td>
+                      <StatusBadge $active={member.active}>
+                        {member.active ? "온라인" : "오프라인"}
+                      </StatusBadge>
+                    </Td>
+                    <Td>
+                      <ApprovalBadge $approved={member.approved}>
+                        승인 대기
+                      </ApprovalBadge>
+                    </Td>
+                    <Td>
+                      <ActionButtons onClick={(e) => e.stopPropagation()}>
+                        <ActionButton
+                          $primary
+                          onClick={(e) => handleApprove(member.id, true, e)}
+                        >
+                          <Check size={14} />
+                          승인
+                        </ActionButton>
+                        <ActionButton
+                          $danger
+                          onClick={(e) => handleApprove(member.id, false, e)}
+                        >
+                          <X size={14} />
+                          거절
+                        </ActionButton>
+                      </ActionButtons>
+                    </Td>
+                  </Tr>
+                ))}
+              </>
+            )}
+            {approvedMembers.map((member) => (
               <Tr
                 key={member.id}
                 initial={{ opacity: 0 }}
@@ -397,6 +513,11 @@ export default function MembersPage() {
                   </StatusBadge>
                 </Td>
                 <Td>
+                  <ApprovalBadge $approved={member.approved}>
+                    승인 완료
+                  </ApprovalBadge>
+                </Td>
+                <Td>
                   <MoreHorizontal size={16} color="#C7C7CC" />
                 </Td>
               </Tr>
@@ -404,7 +525,7 @@ export default function MembersPage() {
             {filteredMembers.length === 0 && (
               <tr>
                 <Td
-                  colSpan={7}
+                  colSpan={8}
                   style={{
                     textAlign: "center",
                     color: "#86868B",

@@ -215,5 +215,12 @@ export const agendasApi = {
   },
 };
 
+export const notificationsApi = {
+  getAll: (userId: number) => fetchApi<{ notifications: any[] }>(`/notifications?userId=${userId}`),
+  markAsRead: (notificationId: number) => fetchApi<{ message: string }>(`/notifications/${notificationId}`, { method: 'PUT' }),
+  markAllAsRead: (userId: number) => fetchApi<{ message: string }>(`/notifications/read-all`, { method: 'POST', body: JSON.stringify({ userId }) }),
+  getUnreadCount: (userId: number) => fetchApi<{ count: number }>(`/notifications/unread-count?userId=${userId}`),
+};
+
 export { ApiError };
 

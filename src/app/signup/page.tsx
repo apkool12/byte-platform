@@ -293,26 +293,18 @@ export default function SignupPage() {
         studentId: formData.studentId,
       });
 
-      const { user } = response;
+      const { user, message } = response;
 
-      // 회원가입 성공 시 자동 로그인 처리
-      setCurrentUser({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role || '회장',
-        department: user.department || '',
-        studentId: user.studentId,
-      });
+      // 승인 대기 상태 메시지 표시
+      alert(message || "회원가입이 완료되었습니다. 회장 승인 후 로그인 가능합니다.");
+
+      // 승인 대기 중이므로 로그인 페이지로 이동
+      router.push("/");
     } catch (error: any) {
       alert(error.message || "회원가입에 실패했습니다.");
       setIsLoading(false);
       return;
     }
-
-    // 회원가입 성공 시 대시보드로 이동
-    router.push("/dashboard");
-    setIsLoading(false);
   };
 
   const isFormValid = () => {

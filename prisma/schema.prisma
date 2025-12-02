@@ -18,11 +18,13 @@ model User {
   department  String
   phone       String    @default("")
   active      Boolean   @default(true)
+  approved    Boolean   @default(false) // 회장 승인 여부
   profileImage String?  @db.Text
   createdAt   DateTime  @default(now())
   
   posts       Post[]
   agendas     Agenda[]
+  notifications Notification[]
   
   @@map("users")
 }
@@ -65,6 +67,7 @@ model Event {
   noTime      Boolean   @default(false)
   isPeriod    Boolean   @default(false)
   createdBy   String?
+  allowedDepartments String[] @default([])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
@@ -90,5 +93,23 @@ model Agenda {
   createdByUser   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
   
   @@map("agendas")
+}
+
+model Notification {
+  id          Int       @id @default(autoincrement())
+  userId      Int       // 알림을 받을 사용자 ID
+  type        String    // 'mention' | 'post' | 'event' | 'agenda'
+  title       String
+  message     String    @db.Text
+  relatedPostId   Int?
+  relatedEventId  String?
+  relatedAgendaId Int?
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+  @@index([userId, read])
 }
 
