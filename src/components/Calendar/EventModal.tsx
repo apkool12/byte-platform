@@ -369,9 +369,6 @@ export default function EventModal({
       return;
     }
     
-    // 시간이 없으면 자동으로 noTime으로 처리
-    const shouldNoTime = !formData.startTime || formData.noTime;
-    
     if (formData.isPeriod && !formData.endDate) {
       alert("여러 날짜에 걸친 일정인 경우 종료 날짜를 입력해주세요.");
       return;
