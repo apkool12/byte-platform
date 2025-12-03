@@ -30,7 +30,7 @@ export interface ApiPost {
   views: number;
   category: "공지" | "일반" | "회의록";
   pinned?: boolean;
-  attachments?: string[];
+  attachments?: (string | { name: string; data?: string })[];
   permission?: {
     read: "전체" | "부장 이상" | "특정 부서" | "작성자만";
     write?: "전체" | "부장 이상" | "특정 부서" | "작성자만";

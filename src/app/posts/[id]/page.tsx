@@ -352,15 +352,50 @@ export default function PostDetailPage() {
           <AttachmentsSection>
             <AttachmentsTitle>첨부파일</AttachmentsTitle>
             <AttachmentList>
-              {post.attachments.map((file, index) => (
-                <AttachmentItem key={index}>
-                  <AttachmentName>{file}</AttachmentName>
-                  <DownloadButton>
-                    <Download size={16} />
-                    <span>다운로드</span>
-                  </DownloadButton>
-                </AttachmentItem>
-              ))}
+              {post.attachments.map((file, index) => {
+                // 파일명 추출 (문자열 또는 객체)
+                const fileName = typeof file === 'string' ? file : (file as any).name || file;
+                const fileObj = typeof file === 'object' && file !== null ? file as { name: string; data?: string } : null;
+                
+                return (
+                  <AttachmentItem key={index}>
+                    <AttachmentName>{fileName}</AttachmentName>
+                    <DownloadButton
+                      onClick={() => {
+                        // base64 데이터가 있으면 클라이언트에서 다운로드
+                        if (fileObj && fileObj.data) {
+                          try {
+                            const byteCharacters = atob(fileObj.data);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                              byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const blob = new Blob([byteArray]);
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = fileObj.name;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          } catch (error) {
+                            console.error('Download error:', error);
+                            alert('파일 다운로드에 실패했습니다.');
+                          }
+                        } else {
+                          // API를 통한 다운로드 (기존 방식 호환)
+                          window.open(`/api/posts/${post.id}/download?filename=${encodeURIComponent(fileName)}`, '_blank');
+                        }
+                      }}
+                    >
+                      <Download size={16} />
+                      <span>다운로드</span>
+                    </DownloadButton>
+                  </AttachmentItem>
+                );
+              })}
             </AttachmentList>
           </AttachmentsSection>
         )}

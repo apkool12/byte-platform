@@ -314,15 +314,31 @@ export default function PostModal({ isOpen, onClose, onSubmit, members = [], ini
     return text.trim().length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || isContentEmpty(formData.content)) {
       alert('제목과 내용을 입력해주세요.');
       return;
     }
+    
+    // 파일을 base64로 변환
+    const attachmentsWithData = await Promise.all(
+      attachments.map(async (file) => {
+        return new Promise<{ name: string; data: string }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(',')[1]; // data:xxx;base64, 부분 제거
+            resolve({ name: file.name, data: base64 });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+
     const postData = {
       ...formData,
-      attachments: attachments.map(f => f.name),
+      attachments: attachmentsWithData,
       permission: {
         read: formData.permission.read,
         allowedDepartments: formData.permission.read === '특정 부서' 
