@@ -94,10 +94,10 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme, $primary }) =>
+    background-color: ${({ theme, $primary }) => 
       $primary 
         ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
-        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
     };
   }
 `;
@@ -163,8 +163,8 @@ const Tr = styled(motion.tr)`
   &:hover {
     background-color: ${({ theme }) => 
       theme.colors.background === '#0F0F0F' 
-        ? 'rgba(255, 255, 255, 0.03)' 
-        : theme.colors.background
+        ? 'rgba(255, 255, 255, 0.08)' 
+        : '#f5f5f7'
     };
   }
 `;
@@ -311,15 +311,19 @@ const AccessDeniedTitle = styled.h2`
 
 const AccessDeniedText = styled.p`
   font-size: 1rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin: 0;
 `;
 
 const InfoText = styled.div`
   font-size: 0.85rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   padding: 0.5rem 1rem;
-  background-color: #f5f5f7;
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
   border-radius: 8px;
 `;
 

@@ -101,7 +101,7 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
     background-color: ${({ theme, $primary }) => 
       $primary 
         ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
-        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
     };
   }
 `;
@@ -133,7 +133,7 @@ const FilterTab = styled(motion.button)<{ $active: boolean }>`
     background-color: ${({ theme, $active }) => 
       $active 
         ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
-        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.05)')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.05)')
     };
   }
 `;

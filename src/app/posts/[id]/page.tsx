@@ -35,11 +35,10 @@ const BackButton = styled(motion.button)`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => 
-      theme.colors.background === '#0F0F0F' 
-        ? 'rgba(255, 255, 255, 0.05)' 
-        : theme.colors.background
-    };
+    background-color: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "rgba(255, 255, 255, 0.05)"
+        : theme.colors.background};
   }
 
   svg {
@@ -178,28 +177,27 @@ const ActionButton = styled(motion.button)<{ $danger?: boolean }>`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border-radius: 10px;
-  border: 1px solid ${({ theme, $danger }) => 
-    $danger ? theme.colors.error : theme.colors.border
-  };
-  background-color: ${({ theme, $danger }) => 
-    $danger ? theme.colors.error : theme.colors.surfaceOpaque
-  };
-  color: ${({ theme, $danger }) => 
-    $danger ? "#fff" : theme.colors.text.primary
-  };
+  border: 1px solid
+    ${({ theme, $danger }) =>
+      $danger ? theme.colors.error : theme.colors.border};
+  background-color: ${({ theme, $danger }) =>
+    $danger ? theme.colors.error : theme.colors.surfaceOpaque};
+  color: ${({ theme, $danger }) =>
+    $danger ? "#fff" : theme.colors.text.primary};
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme, $danger }) => 
-      $danger ? "#c82333" : 
-      (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
-    };
-    border-color: ${({ theme, $danger }) => 
-      $danger ? "#c82333" : theme.colors.text.primary
-    };
+    background-color: ${({ theme, $danger }) =>
+      $danger
+        ? "#c82333"
+        : theme.colors.background === "#0F0F0F"
+        ? "rgba(255, 255, 255, 0.05)"
+        : theme.colors.background};
+    border-color: ${({ theme, $danger }) =>
+      $danger ? "#c82333" : theme.colors.text.primary};
   }
 `;
 
@@ -227,11 +225,10 @@ const AttachmentItem = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background-color: ${({ theme }) => 
-    theme.colors.background === '#0F0F0F' 
-      ? theme.colors.surfaceOpaque 
-      : theme.colors.background
-  };
+  background-color: ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? theme.colors.surfaceOpaque
+      : theme.colors.background};
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.colors.border};
 `;
@@ -256,11 +253,10 @@ const DownloadButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme }) => 
-      theme.colors.background === '#0F0F0F' 
-        ? 'rgba(255, 255, 255, 0.1)' 
-        : theme.colors.background
-    };
+    background-color: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "rgba(255, 255, 255, 0.12)"
+        : "#e5e5ea"};
   }
 
   svg {
@@ -272,7 +268,7 @@ const DownloadButton = styled.button`
 const AccessDenied = styled.div`
   text-align: center;
   padding: 4rem 0;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 // 게시글 내용 요소 타입
