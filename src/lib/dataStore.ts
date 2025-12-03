@@ -192,7 +192,8 @@ class DataStore {
       active: user.active,
       approved: userWithApproved.approved ?? false,
       profileImage: user.profileImage ?? undefined,
-      emailNotificationEnabled: userWithApproved.emailNotificationEnabled ?? true,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     };
   }
@@ -207,7 +208,8 @@ class DataStore {
     const userWithApproved = user as any;
     return {
       ...user,
-      emailNotificationEnabled: userWithApproved.emailNotificationEnabled ?? true,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -234,7 +236,8 @@ class DataStore {
       ...userWithoutPassword,
       password: undefined,
       approved: newUserWithApproved.approved ?? false,
-      emailNotificationEnabled: newUserWithApproved.emailNotificationEnabled ?? true,
+      emailNotificationEnabled:
+        newUserWithApproved.emailNotificationEnabled ?? true,
       createdAt: newUser.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -269,7 +272,8 @@ class DataStore {
         ...userWithoutPassword,
         password: undefined,
         approved: updatedWithApproved.approved ?? false,
-        emailNotificationEnabled: updatedWithApproved.emailNotificationEnabled ?? true,
+        emailNotificationEnabled:
+          updatedWithApproved.emailNotificationEnabled ?? true,
         createdAt: updated.createdAt.toISOString(),
       } as ApiUser;
     } catch {

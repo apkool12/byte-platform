@@ -1,4 +1,6 @@
-export const theme = {
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+export const lightTheme = {
   colors: {
     background: '#F5F5F7', // Apple standard background
     surface: 'rgba(255, 255, 255, 0.8)', // Transparent for blur
@@ -29,4 +31,46 @@ export const theme = {
   blur: {
     default: 'blur(20px)',
   },
+};
+
+export const darkTheme = {
+  colors: {
+    background: '#000000', // Dark background
+    surface: 'rgba(28, 28, 30, 0.8)', // Dark surface with transparency
+    surfaceOpaque: '#1C1C1E', // Dark surface opaque
+    primary: '#0A84FF', // Slightly lighter blue for dark mode
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#98989D',
+      tertiary: '#636366',
+    },
+    border: 'rgba(255, 255, 255, 0.1)',
+    success: '#30D158',
+    warning: '#FF9F0A',
+    error: '#FF453A',
+  },
+  shadows: {
+    small: '0 2px 8px rgba(0, 0, 0, 0.3)',
+    medium: '0 12px 24px rgba(0, 0, 0, 0.4)',
+    large: '0 24px 48px rgba(0, 0, 0, 0.5)',
+    glow: '0 0 20px rgba(10, 132, 255, 0.3)',
+  },
+  borderRadius: {
+    small: '10px',
+    medium: '16px',
+    large: '24px',
+    xlarge: '32px',
+  },
+  blur: {
+    default: 'blur(20px)',
+  },
+};
+
+// 기본 테마는 라이트 모드 (하위 호환성 유지)
+export const theme = lightTheme;
+
+// 시스템 테마 감지
+export const getSystemTheme = (): 'light' | 'dark' => {
+  if (typeof window === 'undefined') return 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };

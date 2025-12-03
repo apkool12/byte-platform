@@ -18,6 +18,7 @@ import ProfileModal from "@/components/Settings/ProfileModal";
 import PasswordModal from "@/components/Settings/PasswordModal";
 import { getCurrentUser } from "@/utils/permissions";
 import { usersApi } from "@/lib/api";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Container = styled.div`
   max-width: 800px;
@@ -180,9 +181,9 @@ const Button = styled(motion.button)`
 export default function SettingsPage() {
   const router = useRouter();
   const currentUser = getCurrentUser();
+  const { mode, actualTheme, setMode } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(true);
-  const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("ko");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -190,24 +191,30 @@ export default function SettingsPage() {
 
   // 현재 사용자의 이메일 알림 설정 불러오기
   useEffect(() => {
-    if (currentUser && (currentUser as any).emailNotificationEnabled !== undefined) {
+    if (
+      currentUser &&
+      (currentUser as any).emailNotificationEnabled !== undefined
+    ) {
       setEmailAlerts((currentUser as any).emailNotificationEnabled ?? true);
     }
   }, [currentUser]);
 
   const handleEmailAlertsToggle = async () => {
     if (!currentUser) return;
-    
+
     const newValue = !emailAlerts;
     setEmailAlerts(newValue);
-    
+
     try {
       await usersApi.update(currentUser.id, {
         emailNotificationEnabled: newValue,
       } as any);
-      
+
       // 로컬 사용자 정보 업데이트
-      const updatedUser = { ...currentUser, emailNotificationEnabled: newValue };
+      const updatedUser = {
+        ...currentUser,
+        emailNotificationEnabled: newValue,
+      };
       if (typeof window !== "undefined") {
         localStorage.setItem("currentUser", JSON.stringify(updatedUser));
       }
@@ -218,8 +225,9 @@ export default function SettingsPage() {
     }
   };
 
+  // 테마 설정은 즉시 저장되므로 별도 저장 버튼 필요 없음
   const handleSave = () => {
-    // 저장 로직 (필요시)
+    // 다른 설정 저장 로직이 필요하면 여기에 추가
     alert("설정이 저장되었습니다.");
   };
 
@@ -308,10 +316,7 @@ export default function SettingsPage() {
                 </SettingDescription>
               </SettingInfo>
             </SettingLeft>
-            <Toggle
-              $active={emailAlerts}
-              onClick={handleEmailAlertsToggle}
-            />
+            <Toggle $active={emailAlerts} onClick={handleEmailAlertsToggle} />
           </SettingItem>
         </SettingsCard>
       </SettingsSection>
@@ -326,13 +331,26 @@ export default function SettingsPage() {
               </SettingIcon>
               <SettingInfo>
                 <SettingLabel>테마</SettingLabel>
-                <SettingDescription>화면 테마를 선택하세요</SettingDescription>
+                <SettingDescription>
+                  {mode === "system"
+                    ? `시스템 설정 (${
+                        actualTheme === "dark" ? "다크" : "라이트"
+                      })`
+                    : mode === "dark"
+                    ? "다크 모드"
+                    : "라이트 모드"}
+                </SettingDescription>
               </SettingInfo>
             </SettingLeft>
-            <Select value={theme} onChange={(e) => setTheme(e.target.value)}>
+            <Select
+              value={mode}
+              onChange={(e) =>
+                setMode(e.target.value as "light" | "dark" | "system")
+              }
+            >
               <option value="light">라이트</option>
               <option value="dark">다크</option>
-              <option value="auto">시스템 설정 따르기</option>
+              <option value="system">시스템 설정</option>
             </Select>
           </SettingItem>
           <SettingItem>
