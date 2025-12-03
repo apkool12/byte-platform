@@ -94,6 +94,11 @@ const EditorContent = styled.div`
     border-radius: 4px;
     font-weight: 500;
   }
+
+  div[data-link] {
+    margin: 0.75rem 0;
+    pointer-events: none;
+  }
 `;
 
 const ColorInput = styled.input`
@@ -259,6 +264,25 @@ export default function RichTextEditor({
     m.department.toLowerCase().includes(mentionQuery.toLowerCase())
   ).slice(0, 5);
 
+  // URL 유효성 검사 함수
+  const isValidUrl = useCallback((string: string): boolean => {
+    try {
+      const url = new URL(string);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (_) {
+      return false;
+    }
+  }, []);
+
+  // URL에서 도메인 추출
+  const extractDomain = useCallback((url: string): string => {
+    try {
+      return new URL(url).hostname.replace('www.', '');
+    } catch {
+      return url;
+    }
+  }, []);
+
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;
     
@@ -367,6 +391,112 @@ export default function RichTextEditor({
     handleInput();
   }, [handleInput]);
 
+  // 링크 카드 삽입 함수
+  const insertLinkCard = useCallback((url: string) => {
+    if (!editorRef.current) return;
+    if (!isValidUrl(url)) {
+      alert('유효한 URL을 입력해주세요. (http:// 또는 https://로 시작해야 합니다)');
+      return;
+    }
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    
+    // 현재 줄의 텍스트 가져오기
+    const textNode = range.startContainer;
+    let textContent = '';
+    let urlStart = 0;
+    let urlEnd = 0;
+
+    if (textNode.nodeType === Node.TEXT_NODE && textNode.parentNode) {
+      textContent = textNode.textContent || '';
+      urlEnd = range.startOffset;
+      
+      // URL 앞부분 찾기 (공백이나 줄바꿈까지)
+      for (let i = urlEnd - 1; i >= 0; i--) {
+        if (textContent[i] === ' ' || textContent[i] === '\n') {
+          urlStart = i + 1;
+          break;
+        }
+        if (i === 0) urlStart = 0;
+      }
+
+      // URL 뒤부분 찾기 (공백이나 줄바꿈까지)
+      for (let i = urlEnd; i < textContent.length; i++) {
+        if (textContent[i] === ' ' || textContent[i] === '\n') {
+          urlEnd = i;
+          break;
+        }
+        if (i === textContent.length - 1) urlEnd = textContent.length;
+      }
+
+      const extractedUrl = textContent.substring(urlStart, urlEnd).trim();
+      
+      if (isValidUrl(extractedUrl)) {
+        // URL 부분 삭제
+        range.setStart(textNode, urlStart);
+        range.setEnd(textNode, urlEnd);
+        range.deleteContents();
+
+        // 링크 카드 요소 생성
+        const linkCard = document.createElement('div');
+        linkCard.setAttribute('data-link', extractedUrl);
+        linkCard.contentEditable = 'false';
+        linkCard.style.display = 'block';
+        linkCard.style.margin = '0.75rem 0';
+        linkCard.style.padding = '1rem';
+        linkCard.style.border = '1px solid rgba(0, 0, 0, 0.08)';
+        linkCard.style.borderRadius = '12px';
+        linkCard.style.backgroundColor = '#fff';
+        linkCard.style.cursor = 'pointer';
+        
+        const domain = extractDomain(extractedUrl);
+        linkCard.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; background-color: #f5f5f7; flex-shrink: 0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #86868b;">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.85rem; color: #86868b; margin-bottom: 0.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${extractedUrl.length > 50 ? extractedUrl.substring(0, 50) + '...' : extractedUrl}
+              </div>
+              <div style="font-size: 0.95rem; font-weight: 600; color: #1d1d1f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${domain}
+              </div>
+            </div>
+          </div>
+        `;
+
+        // 링크 카드 클릭 시 새 탭에서 열기
+        linkCard.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.open(extractedUrl, '_blank', 'noopener,noreferrer');
+        });
+
+        // 링크 카드 삽입
+        range.insertNode(linkCard);
+        
+        // 공백 노드 추가 (다음 입력을 위해)
+        const spaceNode = document.createTextNode('\n');
+        range.setStartAfter(linkCard);
+        range.insertNode(spaceNode);
+        range.setStartAfter(spaceNode);
+        range.collapse(true);
+        
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        handleInput();
+      }
+    }
+  }, [isValidUrl, extractDomain, handleInput]);
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (showMentionDropdown) {
       if (e.key === 'ArrowDown') {
@@ -386,8 +516,30 @@ export default function RichTextEditor({
         setShowMentionDropdown(false);
         setIsMentioning(false);
       }
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      // Enter 키 입력 시 URL 자동 감지 및 변환
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const textNode = range.startContainer;
+        
+        if (textNode.nodeType === Node.TEXT_NODE) {
+          const textContent = textNode.textContent || '';
+          const cursorPos = range.startOffset;
+          const beforeCursor = textContent.substring(0, cursorPos).trim();
+          
+          // URL 패턴 체크 (http:// 또는 https://로 시작)
+          const urlPattern = /(https?:\/\/[^\s]+)/;
+          const urlMatch = beforeCursor.match(urlPattern);
+          
+          if (urlMatch && urlMatch[0]) {
+            e.preventDefault();
+            insertLinkCard(urlMatch[0]);
+          }
+        }
+      }
     }
-  }, [showMentionDropdown, filteredMembers, selectedMentionIndex, insertMention]);
+  }, [showMentionDropdown, filteredMembers, selectedMentionIndex, insertMention, insertLinkCard]);
 
   const execCommand = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -519,7 +671,15 @@ export default function RichTextEditor({
             onClick={(e) => {
               e.preventDefault();
               const url = prompt('링크 URL을 입력하세요:');
-              if (url) execCommand('createLink', url);
+              if (url) {
+                // URL이 유효하면 링크 카드로 삽입, 아니면 일반 링크로
+                try {
+                  new URL(url);
+                  insertLinkCard(url);
+                } catch {
+                  execCommand('createLink', url);
+                }
+              }
             }}
             onMouseDown={(e) => e.preventDefault()}
             title="링크 삽입"
@@ -589,6 +749,10 @@ export default function RichTextEditor({
             border-radius: 8px;
             margin: 0.5rem 0;
             display: block;
+          }
+          [contenteditable] div[data-link] {
+            pointer-events: auto;
+            user-select: none;
           }
         `}</style>
       </EditorWrapper>
