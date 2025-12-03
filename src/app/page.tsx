@@ -29,27 +29,79 @@ const BackgroundGradient = styled.div`
   left: 0;
   background: ${({ theme }) =>
     theme.colors.background === "#0F0F0F"
-      ? "radial-gradient(circle at 50% 0%, #1a1a1a 0%, #0F0F0F 100%)"
-      : "radial-gradient(circle at 50% 0%, #eef2f6 0%, #F5F5F7 100%)"};
+      ? "radial-gradient(ellipse at top, #1a1a2e 0%, #16213e 30%, #0F0F0F 100%)"
+      : "radial-gradient(ellipse at top, #e8eaf0 0%, #d5d9e0 40%, #c8ced8 100%)"};
   z-index: 0;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "radial-gradient(circle at 20% 50%, rgba(100, 100, 120, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(80, 90, 110, 0.1) 0%, transparent 50%)"
+        : "radial-gradient(circle at 20% 50%, rgba(180, 185, 200, 0.2) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(160, 170, 185, 0.15) 0%, transparent 50%)"};
+    animation: float 20s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, -20px) scale(1.05); }
+  }
 `;
 
 const LoginCard = styled(motion.div)`
   width: 100%;
   max-width: 400px;
-  background: ${({ theme }) => theme.colors.surfaceOpaque};
+  background: ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? "rgba(30, 30, 40, 0.7)"
+      : "rgba(255, 255, 255, 0.9)"};
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: ${({ theme }) => theme.shadows.large};
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)"
+      : "0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)"};
+  border: 1px solid ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? "rgba(255, 255, 255, 0.1)"
+      : "rgba(0, 0, 0, 0.08)"};
   z-index: 1;
   position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "radial-gradient(circle, rgba(100, 120, 150, 0.1) 0%, transparent 70%)"
+        : "radial-gradient(circle, rgba(200, 210, 220, 0.2) 0%, transparent 70%)"};
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     padding: 2rem;
-    box-shadow: none;
-    background: transparent;
-    border: none;
+    background: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "rgba(30, 30, 40, 0.8)"
+        : "rgba(255, 255, 255, 0.95)"};
+    box-shadow: ${({ theme }) => theme.shadows.medium};
   }
 `;
 
@@ -58,14 +110,36 @@ const Header = styled.div`
   margin-bottom: 2.5rem;
 `;
 
-const Logo = styled.h1`
+const Logo = styled(motion.h1)`
   font-size: 2.5rem;
-  font-weight: 800;
-  color: ${({ theme }) => theme.colors.text.primary};
+  font-weight: 900;
+  background: ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? "linear-gradient(135deg, #ffffff 0%, #b8c5d6 100%)"
+      : "linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #2d3748 100%)"};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -1px;
   margin-bottom: 0.5rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
+  position: relative;
+  display: inline-block;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)"
+        : "linear-gradient(90deg, transparent 0%, rgba(45, 55, 72, 0.2) 50%, transparent 100%)"};
+    border-radius: 2px;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -249,7 +323,13 @@ export default function LandingPage() {
         transition={{ duration: 0.4 }}
       >
         <Header>
-          <Logo>Byte</Logo>
+          <Logo
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            Byte
+          </Logo>
           <Subtitle>Run Together, Think Shaper</Subtitle>
         </Header>
 
