@@ -28,7 +28,11 @@ const createTransporter = () => {
   console.log("SMTP_HOST:", smtpConfig.host);
   console.log("SMTP_PORT:", smtpConfig.port);
   console.log("SMTP_SECURE:", smtpConfig.secure);
-  console.log("SMTP_USER:", smtpConfig.auth.user);
+  // 보안을 위해 이메일 주소는 마스킹하여 출력
+  const maskedEmail = smtpConfig.auth.user
+    ? smtpConfig.auth.user.replace(/(.{2})(.*)(@.*)/, "$1***$3")
+    : "설정 안됨";
+  console.log("SMTP_USER:", maskedEmail);
 
   return nodemailer.createTransport(smtpConfig);
 };

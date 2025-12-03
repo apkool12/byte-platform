@@ -858,11 +858,16 @@ export async function initializeData() {
   }
 
   // 초기 회장 계정 (자동 승인)
+  // 환경 변수에서 초기 계정 정보 가져오기 (보안을 위해)
+  const initialAdminName = process.env.INITIAL_ADMIN_NAME || "우은식";
+  const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL || "apkool12@naver.com";
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD || "Live_050822!@";
+  
   await prisma.user.create({
     data: {
-      name: "우은식",
-      email: "apkool12@naver.com",
-      password: hashPassword("Live_050822!@"),
+      name: initialAdminName,
+      email: initialAdminEmail,
+      password: hashPassword(initialAdminPassword),
       studentId: "",
       role: "회장",
       department: "총관리",
