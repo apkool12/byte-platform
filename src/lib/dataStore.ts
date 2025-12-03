@@ -10,7 +10,7 @@ export interface ApiUser {
   email: string;
   password?: string;
   studentId: string;
-  role: "회장" | "부회장" | "부장" | "부원";
+  role: "회장" | "부회장" | "부장" | "부원" | "스태프";
   department: string;
   phone: string;
   active: boolean;

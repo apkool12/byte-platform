@@ -234,7 +234,12 @@ export default function MemberModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData as Omit<Member, "id">);
+    // 스태프는 부서를 빈 문자열로 설정
+    const submitData = {
+      ...formData,
+      department: formData.role === '스태프' ? '' : formData.department,
+    };
+    onSubmit(submitData as Omit<Member, "id">);
     onClose();
   };
 
@@ -291,7 +296,10 @@ export default function MemberModal({
                     onChange={(e) =>
                       setFormData({ ...formData, department: e.target.value })
                     }
+                    disabled={formData.role === '스태프'}
+                    style={formData.role === '스태프' ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                   >
+                    <option value="">부서 없음</option>
                     {DEPARTMENTS.map((dept) => (
                       <option key={dept} value={dept}>
                         {dept}
@@ -303,9 +311,14 @@ export default function MemberModal({
                   <Label>직책</Label>
                   <Select
                     value={formData.role}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const newRole = e.target.value;
+                      setFormData({ 
+                        ...formData, 
+                        role: newRole,
+                        department: newRole === '스태프' ? '' : (formData.department || '기획부')
+                      });
+                    }}
                   >
                     {ROLES.map((role) => (
                       <option key={role} value={role}>

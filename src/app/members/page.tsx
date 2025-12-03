@@ -176,6 +176,8 @@ const RoleBadge = styled.span<{ $role: string }>`
         return `background-color: #424245; color: #fff;`;
       case "부장":
         return `background-color: #e5e5e5; color: #1D1D1F;`;
+      case "스태프":
+        return `background-color: #6366f1; color: #fff;`;
       default:
         return `background-color: #f5f5f7; color: #86868b; border: 1px solid rgba(0,0,0,0.05);`;
     }
@@ -467,7 +469,7 @@ export default function MembersPage() {
                     <Td>
                       <RoleBadge $role={member.role}>{member.role}</RoleBadge>
                     </Td>
-                    <Td>{member.department}</Td>
+                    <Td>{member.role === '스태프' ? '-' : member.department}</Td>
                     <Td style={{ color: "#86868b" }}>{member.phone || "-"}</Td>
                     <Td>
                       <StatusBadge $active={member.active}>
