@@ -858,11 +858,35 @@ export async function initializeData() {
   }
 
   // 초기 회장 계정 (자동 승인)
-  // 환경 변수에서 초기 계정 정보 가져오기 (보안을 위해)
-  const initialAdminName = process.env.INITIAL_ADMIN_NAME || "우은식";
-  const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL || "apkool12@naver.com";
-  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD || "Live_050822!@";
-  
+  // 환경 변수에서 초기 계정 정보 가져오기 (보안을 위해 환경 변수 필수)
+  const initialAdminName = process.env.INITIAL_ADMIN_NAME;
+  const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL;
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+
+  // 환경 변수가 설정되지 않은 경우 초기 계정 생성을 건너뛰기
+  // (프로덕션 환경에서는 반드시 환경 변수 설정 필요)
+  if (!initialAdminName || !initialAdminEmail || !initialAdminPassword) {
+    console.warn(
+      "초기 관리자 계정 생성 스킵: INITIAL_ADMIN_NAME, INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASSWORD 환경 변수가 설정되지 않았습니다."
+    );
+    console.warn(
+      "데이터베이스가 비어있는 경우, 환경 변수를 설정하거나 수동으로 관리자 계정을 생성해주세요."
+    );
+    return;
+  }
+
+  // 이메일 중복 체크
+  const existingUser = await prisma.user.findUnique({
+    where: { email: initialAdminEmail },
+  });
+
+  if (existingUser) {
+    console.warn(
+      `초기 관리자 계정 생성 스킵: ${initialAdminEmail} 이메일의 사용자가 이미 존재합니다.`
+    );
+    return;
+  }
+
   await prisma.user.create({
     data: {
       name: initialAdminName,
@@ -876,4 +900,6 @@ export async function initializeData() {
       approved: true, // 회장은 자동 승인
     } as any,
   });
+
+  console.log(`초기 관리자 계정 생성 완료: ${initialAdminName} (${initialAdminEmail})`);
 }
