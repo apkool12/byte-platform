@@ -213,19 +213,25 @@ const ActionButtons = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 `;
 
 const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: none;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  white-space: nowrap;
+  min-width: fit-content;
   background-color: ${({ $primary, $danger }) => {
     if ($primary) return "#1D1D1F";
     if ($danger) return "#FF3B30";
@@ -237,12 +243,18 @@ const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
   }};
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
     transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    flex-shrink: 0;
   }
 `;
 
@@ -471,6 +483,7 @@ export default function MembersPage() {
                       <ActionButtons onClick={(e) => e.stopPropagation()}>
                         <ActionButton
                           $primary
+                          type="button"
                           onClick={(e) => handleApprove(member.id, true, e)}
                         >
                           <Check size={14} />
@@ -478,6 +491,7 @@ export default function MembersPage() {
                         </ActionButton>
                         <ActionButton
                           $danger
+                          type="button"
                           onClick={(e) => handleApprove(member.id, false, e)}
                         >
                           <X size={14} />
@@ -537,6 +551,55 @@ export default function MembersPage() {
               </tr>
             )}
           </tbody>
+        </Table>
+      </TableContainer>
+
+      {selectedMember && (
+        <MemberModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedMember(undefined);
+          }}
+          onSubmit={handleUpdateMember}
+          onDelete={handleDeleteMember}
+          initialData={selectedMember}
+        />
+      )}
+    </Container>
+  );
+}
+
+        </Table>
+      </TableContainer>
+
+      {selectedMember && (
+        <MemberModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedMember(undefined);
+          }}
+          onSubmit={handleUpdateMember}
+          onDelete={handleDeleteMember}
+          initialData={selectedMember}
+        />
+      )}
+    </Container>
+  );
+}
+
+            setSelectedMember(undefined);
+          }}
+          onSubmit={handleUpdateMember}
+          onDelete={handleDeleteMember}
+          initialData={selectedMember}
+        />
+      )}
+    </Container>
+  );
+}
+
         </Table>
       </TableContainer>
 
