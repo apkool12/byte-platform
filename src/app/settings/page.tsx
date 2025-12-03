@@ -10,11 +10,14 @@ import {
   LogOut,
   Save,
   ChevronRight,
+  Mail,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProfileModal from "@/components/Settings/ProfileModal";
 import PasswordModal from "@/components/Settings/PasswordModal";
+import { getCurrentUser } from "@/utils/permissions";
+import { usersApi } from "@/lib/api";
 
 const Container = styled.div`
   max-width: 800px;
@@ -176,15 +179,47 @@ const Button = styled(motion.button)`
 
 export default function SettingsPage() {
   const router = useRouter();
+  const currentUser = getCurrentUser();
   const [notifications, setNotifications] = useState(true);
-  const [emailAlerts, setEmailAlerts] = useState(false);
+  const [emailAlerts, setEmailAlerts] = useState(true);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("ko");
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 현재 사용자의 이메일 알림 설정 불러오기
+  useEffect(() => {
+    if (currentUser && (currentUser as any).emailNotificationEnabled !== undefined) {
+      setEmailAlerts((currentUser as any).emailNotificationEnabled ?? true);
+    }
+  }, [currentUser]);
+
+  const handleEmailAlertsToggle = async () => {
+    if (!currentUser) return;
+    
+    const newValue = !emailAlerts;
+    setEmailAlerts(newValue);
+    
+    try {
+      await usersApi.update(currentUser.id, {
+        emailNotificationEnabled: newValue,
+      } as any);
+      
+      // 로컬 사용자 정보 업데이트
+      const updatedUser = { ...currentUser, emailNotificationEnabled: newValue };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error("이메일 알림 설정 업데이트 실패:", error);
+      setEmailAlerts(!newValue); // 롤백
+      alert("설정 업데이트에 실패했습니다.");
+    }
+  };
 
   const handleSave = () => {
-    // 저장 로직
+    // 저장 로직 (필요시)
     alert("설정이 저장되었습니다.");
   };
 
@@ -264,18 +299,18 @@ export default function SettingsPage() {
           <SettingItem>
             <SettingLeft>
               <SettingIcon>
-                <Bell size={20} />
+                <Mail size={20} />
               </SettingIcon>
               <SettingInfo>
-                <SettingLabel>이메일 알림</SettingLabel>
+                <SettingLabel>이메일 수신 동의</SettingLabel>
                 <SettingDescription>
-                  중요한 업데이트를 이메일로 받습니다
+                  멘션 및 부서 게시글 알림을 이메일로 받습니다
                 </SettingDescription>
               </SettingInfo>
             </SettingLeft>
             <Toggle
               $active={emailAlerts}
-              onClick={() => setEmailAlerts(!emailAlerts)}
+              onClick={handleEmailAlertsToggle}
             />
           </SettingItem>
         </SettingsCard>

@@ -16,6 +16,7 @@ export interface ApiUser {
   active: boolean;
   approved: boolean;
   profileImage?: string;
+  emailNotificationEnabled?: boolean;
   createdAt: string;
 }
 
@@ -90,6 +91,8 @@ class DataStore {
         role: user.role as ApiUser["role"],
         profileImage: user.profileImage ?? undefined,
         approved: userWithApproved.approved ?? false,
+        emailNotificationEnabled:
+          userWithApproved.emailNotificationEnabled ?? true,
         createdAt: user.createdAt.toISOString(),
       };
     });
@@ -110,6 +113,8 @@ class DataStore {
           role: user.role as ApiUser["role"],
           profileImage: user.profileImage ?? undefined,
           approved: userWithApproved.approved ?? false,
+          emailNotificationEnabled:
+            userWithApproved.emailNotificationEnabled ?? true,
           createdAt: user.createdAt.toISOString(),
         } as ApiUser;
       });
@@ -137,6 +142,8 @@ class DataStore {
       active: user.active,
       approved: userWithApproved.approved ?? false,
       profileImage: user.profileImage ?? undefined,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     };
   }
@@ -154,6 +161,8 @@ class DataStore {
       role: user.role as ApiUser["role"],
       profileImage: user.profileImage ?? undefined,
       approved: userWithApproved.approved ?? false,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -183,6 +192,7 @@ class DataStore {
       active: user.active,
       approved: userWithApproved.approved ?? false,
       profileImage: user.profileImage ?? undefined,
+      emailNotificationEnabled: userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     };
   }
@@ -194,8 +204,10 @@ class DataStore {
       where: { email },
     });
     if (!user) return undefined;
+    const userWithApproved = user as any;
     return {
       ...user,
+      emailNotificationEnabled: userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -213,6 +225,7 @@ class DataStore {
         active: user.active,
         approved: user.approved ?? false,
         profileImage: user.profileImage,
+        emailNotificationEnabled: user.emailNotificationEnabled ?? true, // 기본값 true
       } as any,
     });
     const { password, ...userWithoutPassword } = newUser;
@@ -221,6 +234,7 @@ class DataStore {
       ...userWithoutPassword,
       password: undefined,
       approved: newUserWithApproved.approved ?? false,
+      emailNotificationEnabled: newUserWithApproved.emailNotificationEnabled ?? true,
       createdAt: newUser.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -241,6 +255,8 @@ class DataStore {
     if (updates.approved !== undefined) updateData.approved = updates.approved;
     if (updates.profileImage !== undefined)
       updateData.profileImage = updates.profileImage;
+    if (updates.emailNotificationEnabled !== undefined)
+      updateData.emailNotificationEnabled = updates.emailNotificationEnabled;
 
     try {
       const updated = await prisma.user.update({
@@ -248,9 +264,12 @@ class DataStore {
         data: updateData,
       });
       const { password, ...userWithoutPassword } = updated;
+      const updatedWithApproved = updated as any;
       return {
         ...userWithoutPassword,
         password: undefined,
+        approved: updatedWithApproved.approved ?? false,
+        emailNotificationEnabled: updatedWithApproved.emailNotificationEnabled ?? true,
         createdAt: updated.createdAt.toISOString(),
       } as ApiUser;
     } catch {

@@ -96,7 +96,8 @@ export async function POST(request: NextRequest) {
           });
 
           // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
-          if (mentionedUser && mentionedUser.email) {
+          // 이메일 수신 동의 여부 확인
+          if (mentionedUser && mentionedUser.email && (mentionedUser.emailNotificationEnabled ?? true)) {
             sendMentionEmail(
               mentionedUser.email,
               mentionedUser.name,
@@ -129,7 +130,8 @@ export async function POST(request: NextRequest) {
             });
 
             // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
-            if (user.email) {
+            // 이메일 수신 동의 여부 확인
+            if (user.email && (user.emailNotificationEnabled ?? true)) {
               const userDepartment = user.department || permission.allowedDepartments[0];
               sendPostNotificationEmail(
                 user.email,
