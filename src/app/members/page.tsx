@@ -479,12 +479,13 @@ export default function MembersPage() {
                         승인 대기
                       </ApprovalBadge>
                     </Td>
-                    <Td>
+                    <Td style={{ width: "140px", minWidth: "140px" }}>
                       <ActionButtons onClick={(e) => e.stopPropagation()}>
                         <ActionButton
                           $primary
                           type="button"
                           onClick={(e) => handleApprove(member.id, true, e)}
+                          title="승인"
                         >
                           <Check size={14} />
                           승인
@@ -493,6 +494,7 @@ export default function MembersPage() {
                           $danger
                           type="button"
                           onClick={(e) => handleApprove(member.id, false, e)}
+                          title="거절"
                         >
                           <X size={14} />
                           거절
