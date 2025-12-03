@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dataStore } from '@/lib/dataStore';
 import { ApiPost } from '@/lib/dataStore';
-import { sendMentionEmail } from '@/lib/email';
+import { sendMentionEmail, sendPostNotificationEmail } from '@/lib/email';
 
 export async function GET(request: NextRequest) {
   try {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 특정 부서 게시글인 경우 해당 부서 사용자에게 알림
+      // 특정 부서 게시글인 경우 해당 부서 사용자에게 알림 및 이메일 전송
       if (permission?.read === '특정 부서' && permission.allowedDepartments && permission.allowedDepartments.length > 0) {
         for (const user of allUsers) {
           if (
@@ -119,6 +119,7 @@ export async function POST(request: NextRequest) {
             user.id !== authorId &&
             !mentionedUserIds.has(user.id)
           ) {
+            // 알림 생성
             await dataStore.createNotification({
               userId: user.id,
               type: 'post',
@@ -126,6 +127,23 @@ export async function POST(request: NextRequest) {
               message: `${author}님이 "${title}" 게시글을 작성했습니다.`,
               relatedPostId: newPost.id,
             });
+
+            // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
+            if (user.email) {
+              const userDepartment = user.department || permission.allowedDepartments[0];
+              sendPostNotificationEmail(
+                user.email,
+                user.name,
+                author,
+                title,
+                content || '',
+                newPost.id,
+                'department',
+                userDepartment
+              ).catch(error => {
+                console.error(`이메일 전송 실패 (사용자 ID: ${user.id}):`, error);
+              });
+            }
           }
         }
       }
