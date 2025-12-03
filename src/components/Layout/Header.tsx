@@ -48,6 +48,7 @@ const MenuButton = styled.button`
   color: ${({ theme }) => theme.colors.text.primary};
   padding: 0.5rem;
   margin-right: -0.5rem;
+  z-index: 101;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: flex;
