@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
 
           // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
           if (mentionedUser && mentionedUser.email) {
+            console.log(`멘션 이메일 전송 시도: ${mentionedUser.name} (${mentionedUser.email})`);
             sendMentionEmail(
               mentionedUser.email,
               mentionedUser.name,
@@ -104,9 +105,19 @@ export async function POST(request: NextRequest) {
               title,
               content || '',
               newPost.id
-            ).catch(error => {
+            )
+            .then(success => {
+              if (success) {
+                console.log(`멘션 이메일 전송 성공: ${mentionedUser.email}`);
+              } else {
+                console.error(`멘션 이메일 전송 실패: ${mentionedUser.email}`);
+              }
+            })
+            .catch(error => {
               console.error(`이메일 전송 실패 (사용자 ID: ${userId}):`, error);
             });
+          } else {
+            console.warn(`이메일 전송 불가: 사용자 정보 없음 (ID: ${userId})`);
           }
         }
       }
@@ -130,6 +141,7 @@ export async function POST(request: NextRequest) {
 
             // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
             if (user.email) {
+              console.log(`부서 게시글 이메일 전송 시도: ${user.name} (${user.email}) - ${user.department}`);
               const userDepartment = user.department || permission.allowedDepartments[0];
               sendPostNotificationEmail(
                 user.email,
@@ -140,9 +152,19 @@ export async function POST(request: NextRequest) {
                 newPost.id,
                 'department',
                 userDepartment
-              ).catch(error => {
+              )
+              .then(success => {
+                if (success) {
+                  console.log(`부서 게시글 이메일 전송 성공: ${user.email}`);
+                } else {
+                  console.error(`부서 게시글 이메일 전송 실패: ${user.email}`);
+                }
+              })
+              .catch(error => {
                 console.error(`이메일 전송 실패 (사용자 ID: ${user.id}):`, error);
               });
+            } else {
+              console.warn(`이메일 전송 불가: 사용자 이메일 없음 (ID: ${user.id}, 이름: ${user.name})`);
             }
           }
         }

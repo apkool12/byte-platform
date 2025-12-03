@@ -16,8 +16,16 @@ const createTransporter = () => {
   // SMTP 설정이 없으면 null 반환 (이메일 전송 기능 비활성화)
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn("SMTP 설정이 없어 이메일 전송 기능이 비활성화되었습니다.");
+    console.warn("SMTP_USER:", smtpConfig.auth.user ? "설정됨" : "설정 안됨");
+    console.warn("SMTP_PASSWORD:", smtpConfig.auth.pass ? "설정됨" : "설정 안됨");
     return null;
   }
+
+  console.log("SMTP 전송기 생성 중...");
+  console.log("SMTP_HOST:", smtpConfig.host);
+  console.log("SMTP_PORT:", smtpConfig.port);
+  console.log("SMTP_SECURE:", smtpConfig.secure);
+  console.log("SMTP_USER:", smtpConfig.auth.user);
 
   return nodemailer.createTransport(smtpConfig);
 };
@@ -34,6 +42,7 @@ export interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
+    console.log("이메일 전송 시도:", options.to);
     const transporter = createTransporter();
     if (!transporter) {
       console.warn("이메일 전송기 생성 실패: SMTP 설정이 없습니다.");
@@ -43,7 +52,12 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     const fromEmail = process.env.SMTP_FROM || smtpConfig.auth.user;
     const fromName = process.env.SMTP_FROM_NAME || "Byte";
 
-    await transporter.sendMail({
+    console.log("이메일 전송 정보:");
+    console.log("  FROM:", `"${fromName}" <${fromEmail}>`);
+    console.log("  TO:", options.to);
+    console.log("  SUBJECT:", options.subject);
+
+    const result = await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       to: options.to,
       subject: options.subject,
@@ -51,10 +65,18 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       text: options.text || options.html.replace(/<[^>]*>/g, ""), // HTML 태그 제거하여 텍스트 생성
     });
 
-    console.log(`이메일 전송 성공: ${options.to}`);
+    console.log("이메일 전송 성공:", options.to);
+    console.log("전송 결과:", result.messageId);
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error("이메일 전송 실패:", error);
+    console.error("에러 상세:", error.message);
+    if (error.code) {
+      console.error("에러 코드:", error.code);
+    }
+    if (error.response) {
+      console.error("에러 응답:", error.response);
+    }
     return false;
   }
 }
@@ -75,19 +97,26 @@ export async function sendPostNotificationEmail(
 ): Promise<boolean> {
   const postUrl = `${siteUrl}/posts/${postId}`;
 
-  const badgeText = type === "mention" ? "@멘션" : `부서 게시글${department ? ` (${department})` : ""}`;
+  const badgeText =
+    type === "mention"
+      ? "@멘션"
+      : `부서 게시글${department ? ` (${department})` : ""}`;
   const badgeColor = type === "mention" ? "#e3f2fd" : "#f3e5f5";
   const badgeTextColor = type === "mention" ? "#1976d2" : "#7b1fa2";
-  
+
   const notificationMessage =
     type === "mention"
       ? `<strong>${postAuthor}</strong>님이 게시글에서 당신을 언급했습니다.`
-      : `<strong>${postAuthor}</strong>님이 ${department ? `${department} 부서` : "귀하의 부서"} 게시글을 작성했습니다.`;
+      : `<strong>${postAuthor}</strong>님이 ${
+          department ? `${department} 부서` : "귀하의 부서"
+        } 게시글을 작성했습니다.`;
 
   const subject =
     type === "mention"
       ? `[Byte] ${postAuthor}님이 게시글에서 당신을 언급했습니다`
-      : `[Byte] ${postAuthor}님이 ${department ? `${department} 부서` : "새로운"} 게시글을 작성했습니다`;
+      : `[Byte] ${postAuthor}님이 ${
+          department ? `${department} 부서` : "새로운"
+        } 게시글을 작성했습니다`;
 
   // HTML 이메일 템플릿
   const html = `
@@ -203,7 +232,9 @@ export async function sendPostNotificationEmail(
   const textMessage =
     type === "mention"
       ? `${toName}님, ${postAuthor}님이 게시글 "${postTitle}"에서 당신을 언급했습니다. 게시글 보기: ${postUrl}`
-      : `${toName}님, ${postAuthor}님이 ${department ? `${department} 부서` : "새로운"} 게시글 "${postTitle}"을 작성했습니다. 게시글 보기: ${postUrl}`;
+      : `${toName}님, ${postAuthor}님이 ${
+          department ? `${department} 부서` : "새로운"
+        } 게시글 "${postTitle}"을 작성했습니다. 게시글 보기: ${postUrl}`;
 
   return await sendEmail({
     to: toEmail,
