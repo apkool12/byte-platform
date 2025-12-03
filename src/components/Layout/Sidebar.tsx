@@ -39,16 +39,17 @@ const SidebarContainer = styled.aside<{ $isOpen?: boolean }>`
   z-index: 90;
   transition: transform 0.3s ease-in-out;
   background-color: ${({ theme }) => theme.colors.background};
+  transform: translateX(0);
 
-  /* 데스크탑에서는 항상 표시 */
-  @media (min-width: ${({ theme }) => `calc(${theme.breakpoints.mobile} + 1px)`}) {
-    transform: translateX(0) !important;
-  }
-
-  /* 모바일에서는 상태에 따라 표시/숨김 */
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  /* 모바일에서만 슬라이드 동작 */
+  @media (max-width: 768px) {
     transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(-100%)')};
     box-shadow: ${({ theme, $isOpen }) => ($isOpen ? theme.shadows.large : 'none')};
+  }
+
+  /* 데스크탑에서는 항상 표시 (모바일 미디어 쿼리 이후에 적용) */
+  @media (min-width: 769px) {
+    transform: translateX(0) !important;
   }
 `;
 
