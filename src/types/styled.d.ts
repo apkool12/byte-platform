@@ -32,6 +32,11 @@ declare module 'styled-components' {
     blur: {
       default: string;
     };
+    breakpoints: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
   }
 }
 
