@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Pin, Download } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Post } from '@/types/post';
-import { canReadPost, getCurrentUser } from '@/utils/postPermissions';
-import { canEditPost, canDeletePost } from '@/utils/permissions';
-import { postsApi } from '@/lib/api';
-import { Edit, Trash2 } from 'lucide-react';
-import PostModal from '@/components/Posts/PostModal';
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { ArrowLeft, Pin, Download } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Post } from "@/types/post";
+import { canReadPost, getCurrentUser } from "@/utils/postPermissions";
+import { canEditPost, canDeletePost } from "@/utils/permissions";
+import { postsApi } from "@/lib/api";
+import { Edit, Trash2 } from "lucide-react";
+import PostModal from "@/components/Posts/PostModal";
 
 const Container = styled.div`
   max-width: 900px;
@@ -90,16 +90,22 @@ const CategoryBadge = styled.span<{ $category: string }>`
   font-weight: 500;
   background-color: ${({ $category }) => {
     switch ($category) {
-      case '공지': return '#1d1d1f';
-      case '회의록': return '#424245';
-      default: return '#f5f5f7';
+      case "공지":
+        return "#1d1d1f";
+      case "회의록":
+        return "#424245";
+      default:
+        return "#f5f5f7";
     }
   }};
   color: ${({ $category }) => {
     switch ($category) {
-      case '공지': return '#fff';
-      case '회의록': return '#fff';
-      default: return '#86868b';
+      case "공지":
+        return "#fff";
+      case "회의록":
+        return "#fff";
+      default:
+        return "#86868b";
     }
   }};
 `;
@@ -127,7 +133,7 @@ const PostContent = styled.div`
   }
 
   a {
-    color: #007AFF;
+    color: #007aff;
     text-decoration: none;
 
     &:hover {
@@ -167,17 +173,18 @@ const ActionButton = styled(motion.button)<{ $danger?: boolean }>`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border-radius: 10px;
-  border: 1px solid ${({ $danger }) => ($danger ? '#dc3545' : 'rgba(0, 0, 0, 0.08)')};
-  background-color: ${({ $danger }) => ($danger ? '#dc3545' : '#fff')};
-  color: ${({ $danger }) => ($danger ? '#fff' : '#1d1d1f')};
+  border: 1px solid
+    ${({ $danger }) => ($danger ? "#dc3545" : "rgba(0, 0, 0, 0.08)")};
+  background-color: ${({ $danger }) => ($danger ? "#dc3545" : "#fff")};
+  color: ${({ $danger }) => ($danger ? "#fff" : "#1d1d1f")};
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $danger }) => ($danger ? '#c82333' : '#f5f5f7')};
-    border-color: ${({ $danger }) => ($danger ? '#c82333' : '#1d1d1f')};
+    background-color: ${({ $danger }) => ($danger ? "#c82333" : "#f5f5f7")};
+    border-color: ${({ $danger }) => ($danger ? "#c82333" : "#1d1d1f")};
   }
 `;
 
@@ -239,11 +246,10 @@ const DownloadButton = styled.button`
   }
 `;
 
-
 const AccessDenied = styled.div`
   text-align: center;
   padding: 4rem 0;
-  color: #86868B;
+  color: #86868b;
 `;
 
 export default function PostDetailPage() {
@@ -260,7 +266,7 @@ export default function PostDetailPage() {
         const response = await postsApi.getById(postId);
         setPost(response.post);
       } catch (error) {
-        console.error('Failed to fetch post:', error);
+        console.error("Failed to fetch post:", error);
       }
     };
 
@@ -272,11 +278,13 @@ export default function PostDetailPage() {
   if (!post) {
     return (
       <Container>
-        <BackButton onClick={() => router.push('/posts')}>
+        <BackButton onClick={() => router.push("/posts")}>
           <ArrowLeft />
           <span>목록으로</span>
         </BackButton>
-        <div style={{ textAlign: 'center', padding: '4rem 0', color: '#86868B' }}>
+        <div
+          style={{ textAlign: "center", padding: "4rem 0", color: "#86868B" }}
+        >
           게시글을 찾을 수 없습니다.
         </div>
       </Container>
@@ -287,8 +295,8 @@ export default function PostDetailPage() {
   if (!currentUser || !canReadPost(post, currentUser)) {
     return (
       <Container>
-        <BackButton 
-          onClick={() => router.push('/posts')}
+        <BackButton
+          onClick={() => router.push("/posts")}
           whileHover={{ x: -4 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -301,7 +309,13 @@ export default function PostDetailPage() {
           transition={{ duration: 0.3 }}
         >
           <AccessDenied>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <h2
+              style={{
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                marginBottom: "0.5rem",
+              }}
+            >
               접근 권한이 없습니다
             </h2>
             <p>이 게시글을 볼 수 있는 권한이 없습니다.</p>
@@ -313,8 +327,8 @@ export default function PostDetailPage() {
 
   return (
     <Container>
-      <BackButton 
-        onClick={() => router.push('/posts')}
+      <BackButton
+        onClick={() => router.push("/posts")}
         whileHover={{ x: -4 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -340,13 +354,13 @@ export default function PostDetailPage() {
             <MetaItem>{post.createdAt}</MetaItem>
             <MetaItem>·</MetaItem>
             <MetaItem>조회 {post.views}</MetaItem>
-            <CategoryBadge $category={post.category}>{post.category}</CategoryBadge>
+            <CategoryBadge $category={post.category}>
+              {post.category}
+            </CategoryBadge>
           </PostMeta>
         </PostHeader>
 
-        <PostContent 
-          dangerouslySetInnerHTML={{ __html: post.content || '' }}
-        />
+        <PostContent dangerouslySetInnerHTML={{ __html: post.content || "" }} />
 
         {post.attachments && post.attachments.length > 0 && (
           <AttachmentsSection>
@@ -354,9 +368,13 @@ export default function PostDetailPage() {
             <AttachmentList>
               {post.attachments.map((file, index) => {
                 // 파일명 추출 (문자열 또는 객체)
-                const fileName = typeof file === 'string' ? file : (file as any).name || file;
-                const fileObj = typeof file === 'object' && file !== null ? file as { name: string; data?: string } : null;
-                
+                const fileName =
+                  typeof file === "string" ? file : (file as any).name || file;
+                const fileObj =
+                  typeof file === "object" && file !== null
+                    ? (file as { name: string; data?: string })
+                    : null;
+
                 const handleDownload = () => {
                   // base64 데이터가 있으면 클라이언트에서 다운로드
                   if (fileObj && fileObj.data) {
@@ -368,56 +386,61 @@ export default function PostDetailPage() {
                       for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
                       }
-                      
+
                       // 파일 확장자에 따른 MIME 타입 결정
-                      const ext = fileName.split('.').pop()?.toLowerCase();
+                      const ext = fileName.split(".").pop()?.toLowerCase();
                       const mimeTypes: { [key: string]: string } = {
-                        pdf: 'application/pdf',
-                        doc: 'application/msword',
-                        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                        xls: 'application/vnd.ms-excel',
-                        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                        ppt: 'application/vnd.ms-powerpoint',
-                        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                        zip: 'application/zip',
-                        txt: 'text/plain',
-                        jpg: 'image/jpeg',
-                        jpeg: 'image/jpeg',
-                        png: 'image/png',
-                        gif: 'image/gif',
+                        pdf: "application/pdf",
+                        doc: "application/msword",
+                        docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        xls: "application/vnd.ms-excel",
+                        xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        ppt: "application/vnd.ms-powerpoint",
+                        pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        zip: "application/zip",
+                        txt: "text/plain",
+                        jpg: "image/jpeg",
+                        jpeg: "image/jpeg",
+                        png: "image/png",
+                        gif: "image/gif",
                       };
-                      const mimeType = ext && mimeTypes[ext] ? mimeTypes[ext] : 'application/octet-stream';
-                      
+                      const mimeType =
+                        ext && mimeTypes[ext]
+                          ? mimeTypes[ext]
+                          : "application/octet-stream";
+
                       // Blob 생성
                       const blob = new Blob([bytes], { type: mimeType });
-                      
+
                       // 다운로드
                       const url = URL.createObjectURL(blob);
-                      const link = document.createElement('a');
+                      const link = document.createElement("a");
                       link.href = url;
                       link.download = fileName;
-                      link.style.display = 'none';
+                      link.style.display = "none";
                       document.body.appendChild(link);
                       link.click();
                       document.body.removeChild(link);
                       URL.revokeObjectURL(url);
                     } catch (error) {
-                      console.error('Download error:', error);
-                      alert('파일 다운로드에 실패했습니다.');
+                      console.error("Download error:", error);
+                      alert("파일 다운로드에 실패했습니다.");
                     }
                   } else {
                     // API를 통한 다운로드 (기존 방식 호환)
-                    const downloadUrl = `/api/posts/${post.id}/download?filename=${encodeURIComponent(fileName)}`;
-                    const link = document.createElement('a');
+                    const downloadUrl = `/api/posts/${
+                      post.id
+                    }/download?filename=${encodeURIComponent(fileName)}`;
+                    const link = document.createElement("a");
                     link.href = downloadUrl;
                     link.download = fileName;
-                    link.style.display = 'none';
+                    link.style.display = "none";
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                   }
                 };
-                
+
                 return (
                   <AttachmentItem key={index}>
                     <AttachmentName>{fileName}</AttachmentName>
@@ -450,10 +473,10 @@ export default function PostDetailPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={async () => {
-                  if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                  if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
                     try {
                       await postsApi.delete(postId);
-                      router.push('/posts');
+                      router.push("/posts");
                     } catch (error: any) {
                       alert(error.message || "게시글 삭제에 실패했습니다.");
                     }
@@ -488,4 +511,3 @@ export default function PostDetailPage() {
     </Container>
   );
 }
-

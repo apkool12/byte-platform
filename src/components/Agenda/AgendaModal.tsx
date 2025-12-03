@@ -311,6 +311,11 @@ export default function AgendaModal({
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.keyCode !== 229) {
+                      e.preventDefault();
+                    }
+                  }}
                   placeholder="안건 제목을 입력하세요"
                   required
                 />

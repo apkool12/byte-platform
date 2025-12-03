@@ -232,10 +232,13 @@ class DataStore {
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
       attachments: Array.isArray(post.attachments)
-        ? post.attachments.map(a => {
+        ? post.attachments.map((a) => {
             try {
               // JSON 문자열인 경우 파싱
-              if (typeof a === 'string' && (a.startsWith('{') || a.startsWith('['))) {
+              if (
+                typeof a === "string" &&
+                (a.startsWith("{") || a.startsWith("["))
+              ) {
                 return JSON.parse(a);
               }
               // 일반 문자열인 경우 (기존 호환성)
@@ -282,10 +285,13 @@ class DataStore {
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
       attachments: Array.isArray(post.attachments)
-        ? post.attachments.map(a => {
+        ? post.attachments.map((a) => {
             try {
               // JSON 문자열인 경우 파싱
-              if (typeof a === 'string' && (a.startsWith('{') || a.startsWith('['))) {
+              if (
+                typeof a === "string" &&
+                (a.startsWith("{") || a.startsWith("["))
+              ) {
                 return JSON.parse(a);
               }
               // 일반 문자열인 경우 (기존 호환성)

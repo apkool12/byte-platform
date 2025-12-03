@@ -159,6 +159,7 @@ export default function CustomDropdown<T extends string>({
             {options.map((option, index) => (
               <DropdownItem
                 key={option.value === '' ? `empty-${index}` : option.value}
+                type="button"
                 onClick={() => {
                   onChange(option.value);
                   setIsOpen(false);
