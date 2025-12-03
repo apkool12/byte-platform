@@ -901,5 +901,7 @@ export async function initializeData() {
     } as any,
   });
 
-  console.log(`초기 관리자 계정 생성 완료: ${initialAdminName} (${initialAdminEmail})`);
+  console.log(
+    `초기 관리자 계정 생성 완료: ${initialAdminName} (${initialAdminEmail})`
+  );
 }

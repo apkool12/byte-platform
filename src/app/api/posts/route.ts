@@ -42,32 +42,18 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  console.log("=== 게시글 작성 API 호출 ===");
   try {
     const body = await request.json();
     const { title, content, author, authorId, department, category, pinned, attachments, permission } = body;
 
-    console.log("게시글 데이터:", {
-      title,
-      author,
-      authorId,
-      department,
-      category,
-      hasContent: !!content,
-      contentLength: content?.length || 0,
-      permission: permission ? JSON.stringify(permission) : "없음",
-    });
-
     // 유효성 검사
     if (!title || !author || !authorId || !department || !category) {
-      console.error("필수 필드 누락:", { title, author, authorId, department, category });
       return NextResponse.json(
         { error: '필수 필드가 누락되었습니다.' },
         { status: 400 }
       );
     }
 
-    console.log("게시글 저장 시작...");
     const newPost = await dataStore.addPost({
       title,
       content: content || '',
@@ -80,28 +66,19 @@ export async function POST(request: NextRequest) {
       permission,
     });
 
-    console.log("게시글 저장 완료, ID:", newPost.id);
-
     // 알림 생성: 멘션된 사용자 및 특정 부서 사용자에게
     try {
-      console.log("알림/이메일 전송 로직 시작...");
       const allUsers = await dataStore.getUsers();
-      console.log("전체 사용자 수:", allUsers.length);
       const mentionedUserIds = new Set<number>();
       
       // 멘션 추출 (data-mention 속성에서)
       if (content) {
-        console.log("게시글 내용에서 멘션 추출 중...");
         const mentionRegex = /<span[^>]*data-mention="(\d+)"[^>]*>@([^<]+)<\/span>/g;
         let match;
         while ((match = mentionRegex.exec(content)) !== null) {
           const userId = parseInt(match[1]);
           mentionedUserIds.add(userId);
-          console.log(`멘션 발견: 사용자 ID ${userId}`);
         }
-        console.log(`총 ${mentionedUserIds.size}명 멘션됨`);
-      } else {
-        console.log("게시글 내용이 없어 멘션 추출 스킵");
       }
 
       // 멘션된 사용자에게 알림 및 이메일 전송
@@ -120,7 +97,6 @@ export async function POST(request: NextRequest) {
 
           // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
           if (mentionedUser && mentionedUser.email) {
-            console.log(`멘션 이메일 전송 시도: ${mentionedUser.name} (${mentionedUser.email})`);
             sendMentionEmail(
               mentionedUser.email,
               mentionedUser.name,
@@ -128,30 +104,15 @@ export async function POST(request: NextRequest) {
               title,
               content || '',
               newPost.id
-            )
-            .then(success => {
-              if (success) {
-                console.log(`멘션 이메일 전송 성공: ${mentionedUser.email}`);
-              } else {
-                console.error(`멘션 이메일 전송 실패: ${mentionedUser.email}`);
-              }
-            })
-            .catch(error => {
+            ).catch(error => {
               console.error(`이메일 전송 실패 (사용자 ID: ${userId}):`, error);
             });
-          } else {
-            console.warn(`이메일 전송 불가: 사용자 정보 없음 (ID: ${userId})`);
           }
         }
       }
 
       // 특정 부서 게시글인 경우 해당 부서 사용자에게 알림 및 이메일 전송
-      console.log("부서 게시글 확인:", {
-        readPermission: permission?.read,
-        allowedDepartments: permission?.allowedDepartments,
-      });
       if (permission?.read === '특정 부서' && permission.allowedDepartments && permission.allowedDepartments.length > 0) {
-        console.log(`특정 부서 게시글: ${permission.allowedDepartments.join(", ")} 부서에 알림 전송`);
         for (const user of allUsers) {
           if (
             permission.allowedDepartments.includes(user.department) &&
@@ -169,7 +130,6 @@ export async function POST(request: NextRequest) {
 
             // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
             if (user.email) {
-              console.log(`부서 게시글 이메일 전송 시도: ${user.name} (${user.email}) - ${user.department}`);
               const userDepartment = user.department || permission.allowedDepartments[0];
               sendPostNotificationEmail(
                 user.email,
@@ -180,19 +140,9 @@ export async function POST(request: NextRequest) {
                 newPost.id,
                 'department',
                 userDepartment
-              )
-              .then(success => {
-                if (success) {
-                  console.log(`부서 게시글 이메일 전송 성공: ${user.email}`);
-                } else {
-                  console.error(`부서 게시글 이메일 전송 실패: ${user.email}`);
-                }
-              })
-              .catch(error => {
+              ).catch(error => {
                 console.error(`이메일 전송 실패 (사용자 ID: ${user.id}):`, error);
               });
-            } else {
-              console.warn(`이메일 전송 불가: 사용자 이메일 없음 (ID: ${user.id}, 이름: ${user.name})`);
             }
           }
         }
@@ -202,13 +152,11 @@ export async function POST(request: NextRequest) {
       // 알림 생성 실패해도 게시글은 성공 처리
     }
 
-    console.log("=== 게시글 작성 완료 ===");
     return NextResponse.json(
       { post: newPost, message: '게시글이 작성되었습니다.' },
       { status: 201 }
     );
   } catch (error) {
-    console.error('=== 게시글 작성 에러 ===');
     console.error('Create post error:', error);
     return NextResponse.json(
       { error: '서버 오류가 발생했습니다.' },

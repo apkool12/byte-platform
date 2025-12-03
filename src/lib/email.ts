@@ -15,24 +15,8 @@ const smtpConfig = {
 const createTransporter = () => {
   // SMTP 설정이 없으면 null 반환 (이메일 전송 기능 비활성화)
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
-    console.warn("SMTP 설정이 없어 이메일 전송 기능이 비활성화되었습니다.");
-    console.warn("SMTP_USER:", smtpConfig.auth.user ? "설정됨" : "설정 안됨");
-    console.warn(
-      "SMTP_PASSWORD:",
-      smtpConfig.auth.pass ? "설정됨" : "설정 안됨"
-    );
     return null;
   }
-
-  console.log("SMTP 전송기 생성 중...");
-  console.log("SMTP_HOST:", smtpConfig.host);
-  console.log("SMTP_PORT:", smtpConfig.port);
-  console.log("SMTP_SECURE:", smtpConfig.secure);
-  // 보안을 위해 이메일 주소는 마스킹하여 출력
-  const maskedEmail = smtpConfig.auth.user
-    ? smtpConfig.auth.user.replace(/(.{2})(.*)(@.*)/, "$1***$3")
-    : "설정 안됨";
-  console.log("SMTP_USER:", maskedEmail);
 
   return nodemailer.createTransport(smtpConfig);
 };
@@ -49,22 +33,15 @@ export interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    console.log("이메일 전송 시도:", options.to);
     const transporter = createTransporter();
     if (!transporter) {
-      console.warn("이메일 전송기 생성 실패: SMTP 설정이 없습니다.");
       return false;
     }
 
     const fromEmail = process.env.SMTP_FROM || smtpConfig.auth.user;
     const fromName = process.env.SMTP_FROM_NAME || "Byte";
 
-    console.log("이메일 전송 정보:");
-    console.log("  FROM:", `"${fromName}" <${fromEmail}>`);
-    console.log("  TO:", options.to);
-    console.log("  SUBJECT:", options.subject);
-
-    const result = await transporter.sendMail({
+    await transporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       to: options.to,
       subject: options.subject,
@@ -72,18 +49,9 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       text: options.text || options.html.replace(/<[^>]*>/g, ""), // HTML 태그 제거하여 텍스트 생성
     });
 
-    console.log("이메일 전송 성공:", options.to);
-    console.log("전송 결과:", result.messageId);
     return true;
   } catch (error: any) {
     console.error("이메일 전송 실패:", error);
-    console.error("에러 상세:", error.message);
-    if (error.code) {
-      console.error("에러 코드:", error.code);
-    }
-    if (error.response) {
-      console.error("에러 응답:", error.response);
-    }
     return false;
   }
 }
