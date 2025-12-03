@@ -80,26 +80,41 @@ const Label = styled.label`
   margin-bottom: 0.5rem;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $disabled?: boolean }>`
   width: 100%;
   padding: 1rem 3rem 1rem 3rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme, $disabled }) => 
+    $disabled 
+      ? (theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background)
+      : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $disabled }) => 
+    $disabled ? theme.colors.text.secondary : theme.colors.text.primary
+  };
   font-size: 0.95rem;
   transition: all 0.2s;
   outline: none;
   box-sizing: border-box;
 
   &::placeholder {
-    color: #86868b;
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 
-  &:focus {
-    background-color: #fff;
-    border-color: #1d1d1f;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+  &:focus:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(62, 166, 255, 0.2)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 `;
 
@@ -432,7 +447,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   type="email"
                   value={getCurrentUser()?.email || ''}
                   disabled
-                  style={{ backgroundColor: '#f5f5f7', color: '#86868b' }}
+                  $disabled
                 />
                 <IconWrapper>
                   <Mail size={20} />
