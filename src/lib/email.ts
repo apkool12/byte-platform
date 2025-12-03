@@ -17,7 +17,10 @@ const createTransporter = () => {
   if (!smtpConfig.auth.user || !smtpConfig.auth.pass) {
     console.warn("SMTP 설정이 없어 이메일 전송 기능이 비활성화되었습니다.");
     console.warn("SMTP_USER:", smtpConfig.auth.user ? "설정됨" : "설정 안됨");
-    console.warn("SMTP_PASSWORD:", smtpConfig.auth.pass ? "설정됨" : "설정 안됨");
+    console.warn(
+      "SMTP_PASSWORD:",
+      smtpConfig.auth.pass ? "설정됨" : "설정 안됨"
+    );
     return null;
   }
 
