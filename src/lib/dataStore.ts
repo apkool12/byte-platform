@@ -231,7 +231,20 @@ class DataStore {
       views: post.views,
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
-      attachments: post.attachments,
+      attachments: Array.isArray(post.attachments)
+        ? post.attachments.map(a => {
+            try {
+              // JSON 문자열인 경우 파싱
+              if (typeof a === 'string' && (a.startsWith('{') || a.startsWith('['))) {
+                return JSON.parse(a);
+              }
+              // 일반 문자열인 경우 (기존 호환성)
+              return a;
+            } catch {
+              return a;
+            }
+          })
+        : [],
       permission: post.permissionRead
         ? {
             read: post.permissionRead as
@@ -268,7 +281,20 @@ class DataStore {
       views: post.views,
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
-      attachments: post.attachments,
+      attachments: Array.isArray(post.attachments)
+        ? post.attachments.map(a => {
+            try {
+              // JSON 문자열인 경우 파싱
+              if (typeof a === 'string' && (a.startsWith('{') || a.startsWith('['))) {
+                return JSON.parse(a);
+              }
+              // 일반 문자열인 경우 (기존 호환성)
+              return a;
+            } catch {
+              return a;
+            }
+          })
+        : [],
       permission: post.permissionRead
         ? {
             read: post.permissionRead as
@@ -300,7 +326,11 @@ class DataStore {
         department: post.department,
         category: post.category,
         pinned: post.pinned || false,
-        attachments: post.attachments || [],
+        attachments: Array.isArray(post.attachments)
+          ? post.attachments.map((a) =>
+              typeof a === "string" ? a : JSON.stringify(a)
+            )
+          : [],
         permissionRead: post.permission?.read,
         permissionWrite: post.permission?.write,
         allowedDepartments: post.permission?.allowedDepartments || [],

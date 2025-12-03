@@ -357,39 +357,71 @@ export default function PostDetailPage() {
                 const fileName = typeof file === 'string' ? file : (file as any).name || file;
                 const fileObj = typeof file === 'object' && file !== null ? file as { name: string; data?: string } : null;
                 
+                const handleDownload = () => {
+                  // base64 데이터가 있으면 클라이언트에서 다운로드
+                  if (fileObj && fileObj.data) {
+                    try {
+                      // base64 데이터 디코딩
+                      const base64Data = fileObj.data;
+                      const binaryString = atob(base64Data);
+                      const bytes = new Uint8Array(binaryString.length);
+                      for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                      }
+                      
+                      // 파일 확장자에 따른 MIME 타입 결정
+                      const ext = fileName.split('.').pop()?.toLowerCase();
+                      const mimeTypes: { [key: string]: string } = {
+                        pdf: 'application/pdf',
+                        doc: 'application/msword',
+                        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        xls: 'application/vnd.ms-excel',
+                        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                        ppt: 'application/vnd.ms-powerpoint',
+                        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                        zip: 'application/zip',
+                        txt: 'text/plain',
+                        jpg: 'image/jpeg',
+                        jpeg: 'image/jpeg',
+                        png: 'image/png',
+                        gif: 'image/gif',
+                      };
+                      const mimeType = ext && mimeTypes[ext] ? mimeTypes[ext] : 'application/octet-stream';
+                      
+                      // Blob 생성
+                      const blob = new Blob([bytes], { type: mimeType });
+                      
+                      // 다운로드
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = fileName;
+                      link.style.display = 'none';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                      URL.revokeObjectURL(url);
+                    } catch (error) {
+                      console.error('Download error:', error);
+                      alert('파일 다운로드에 실패했습니다.');
+                    }
+                  } else {
+                    // API를 통한 다운로드 (기존 방식 호환)
+                    const downloadUrl = `/api/posts/${post.id}/download?filename=${encodeURIComponent(fileName)}`;
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = fileName;
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
+                };
+                
                 return (
                   <AttachmentItem key={index}>
                     <AttachmentName>{fileName}</AttachmentName>
-                    <DownloadButton
-                      onClick={() => {
-                        // base64 데이터가 있으면 클라이언트에서 다운로드
-                        if (fileObj && fileObj.data) {
-                          try {
-                            const byteCharacters = atob(fileObj.data);
-                            const byteNumbers = new Array(byteCharacters.length);
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                              byteNumbers[i] = byteCharacters.charCodeAt(i);
-                            }
-                            const byteArray = new Uint8Array(byteNumbers);
-                            const blob = new Blob([byteArray]);
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = fileObj.name;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                            URL.revokeObjectURL(url);
-                          } catch (error) {
-                            console.error('Download error:', error);
-                            alert('파일 다운로드에 실패했습니다.');
-                          }
-                        } else {
-                          // API를 통한 다운로드 (기존 방식 호환)
-                          window.open(`/api/posts/${post.id}/download?filename=${encodeURIComponent(fileName)}`, '_blank');
-                        }
-                      }}
-                    >
+                    <DownloadButton onClick={handleDownload} type="button">
                       <Download size={16} />
                       <span>다운로드</span>
                     </DownloadButton>
