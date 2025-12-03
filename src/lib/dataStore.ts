@@ -115,6 +115,35 @@ class DataStore {
       });
   }
 
+  async getUserByEmailOrName(identifier: string): Promise<ApiUser | undefined> {
+    // 이메일 또는 이름으로 사용자 찾기
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { name: identifier },
+        ],
+      },
+    });
+
+    if (!user) return undefined;
+
+    const userWithApproved = user as any;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      studentId: user.studentId || "",
+      role: user.role as ApiUser["role"],
+      department: user.department || "",
+      phone: user.phone || "",
+      active: user.active,
+      approved: userWithApproved.approved ?? false,
+      profileImage: user.profileImage ?? undefined,
+      createdAt: user.createdAt.toISOString(),
+    };
+  }
+
   async getUserByEmail(email: string): Promise<ApiUser | undefined> {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -130,6 +159,38 @@ class DataStore {
       approved: userWithApproved.approved ?? false,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
+  }
+
+  async getUserByEmailOrNameWithPassword(
+    identifier: string
+  ): Promise<ApiUser | undefined> {
+    // 이메일 또는 이름으로 사용자 찾기 (비밀번호 포함)
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { name: identifier },
+        ],
+      },
+    });
+
+    if (!user) return undefined;
+
+    const userWithApproved = user as any;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password || undefined,
+      studentId: user.studentId || "",
+      role: user.role as ApiUser["role"],
+      department: user.department || "",
+      phone: user.phone || "",
+      active: user.active,
+      approved: userWithApproved.approved ?? false,
+      profileImage: user.profileImage ?? undefined,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
 
   async getUserByEmailWithPassword(

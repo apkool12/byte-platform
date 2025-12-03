@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Mail, Lock, Eye, EyeOff, User } from "lucide-react";
 import { useState } from "react";
 import { setCurrentUser } from "@/utils/permissions";
 import { authApi } from "@/lib/api";
@@ -370,15 +370,15 @@ export default function LandingPage() {
         <Form onSubmit={handleSubmit}>
           <InputGroup>
             <IconWrapper>
-              <Mail size={20} />
+              <User size={20} />
             </IconWrapper>
             <Input
-              type="email"
-              placeholder="이메일"
+              type="text"
+              placeholder="이메일 또는 이름"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
+              autoComplete="username"
             />
           </InputGroup>
 
