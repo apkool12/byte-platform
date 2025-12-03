@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dataStore } from '@/lib/dataStore';
 import { ApiPost } from '@/lib/dataStore';
+import { sendMentionEmail } from '@/lib/email';
 
 export async function GET(request: NextRequest) {
   try {
@@ -80,9 +81,12 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 멘션된 사용자에게 알림
+      // 멘션된 사용자에게 알림 및 이메일 전송
       for (const userId of mentionedUserIds) {
         if (userId !== authorId) {
+          const mentionedUser = allUsers.find(u => u.id === userId);
+          
+          // 알림 생성
           await dataStore.createNotification({
             userId,
             type: 'mention',
@@ -90,6 +94,20 @@ export async function POST(request: NextRequest) {
             message: `${author}님이 게시글에서 당신을 언급했습니다: "${title}"`,
             relatedPostId: newPost.id,
           });
+
+          // 이메일 전송 (비동기로 실행하여 게시글 생성을 막지 않음)
+          if (mentionedUser && mentionedUser.email) {
+            sendMentionEmail(
+              mentionedUser.email,
+              mentionedUser.name,
+              author,
+              title,
+              content || '',
+              newPost.id
+            ).catch(error => {
+              console.error(`이메일 전송 실패 (사용자 ID: ${userId}):`, error);
+            });
+          }
         }
       }
 

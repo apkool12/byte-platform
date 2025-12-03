@@ -119,10 +119,7 @@ class DataStore {
     // 이메일 또는 이름으로 사용자 찾기
     const user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: identifier },
-          { name: identifier },
-        ],
+        OR: [{ email: identifier }, { name: identifier }],
       },
     });
 
@@ -167,10 +164,7 @@ class DataStore {
     // 이메일 또는 이름으로 사용자 찾기 (비밀번호 포함)
     const user = await prisma.user.findFirst({
       where: {
-        OR: [
-          { email: identifier },
-          { name: identifier },
-        ],
+        OR: [{ email: identifier }, { name: identifier }],
       },
     });
 
