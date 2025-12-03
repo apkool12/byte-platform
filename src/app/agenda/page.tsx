@@ -3,12 +3,13 @@
 import styled from 'styled-components';
 import { motion, Variants } from 'framer-motion';
 import { Plus, Search, Filter, CheckCircle2, Clock, Pause, AlertCircle, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Agenda, AGENDA_CATEGORIES, AGENDA_STATUS, AGENDA_PRIORITY } from '@/types/agenda';
 import { agendasApi } from '@/lib/api';
 import { getCurrentUser } from '@/utils/permissions';
 import AgendaModal from '@/components/Agenda/AgendaModal';
+import LinkPreview from '@/components/Posts/LinkPreview';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -202,16 +203,80 @@ const CardTitle = styled.h3`
   line-height: 1.4;
 `;
 
-const CardDescription = styled.p`
+const CardDescription = styled.div`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.text.secondary};
   line-height: 1.5;
   margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  
+  p {
+    margin: 0 0 0.5rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  div[data-link] {
+    margin: 0.5rem 0;
+  }
 `;
+
+// 안건 설명 렌더러 - 링크 카드를 처리
+type ContentElement =
+  | { type: "html"; content: string }
+  | { type: "link"; content: string; url: string };
+
+function AgendaDescriptionRenderer({ content }: { content: string }) {
+  const elements = useMemo((): ContentElement[] => {
+    if (!content) return [];
+
+    // 정규식으로 링크 카드 추출
+    const linkPattern = /<div[^>]*data-link="([^"]*)"[^>]*>.*?<\/div>/gi;
+    const parts: ContentElement[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = linkPattern.exec(content)) !== null) {
+      // 링크 전의 HTML 추가
+      if (match.index > lastIndex) {
+        parts.push({
+          type: "html",
+          content: content.substring(lastIndex, match.index),
+        });
+      }
+      // 링크 URL 추출
+      const urlMatch = match[1];
+      if (urlMatch) {
+        parts.push({ type: "link", content: "", url: urlMatch });
+      }
+      lastIndex = match.index + match[0].length;
+    }
+
+    // 남은 HTML 추가
+    if (lastIndex < content.length) {
+      parts.push({ type: "html", content: content.substring(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: "html", content }];
+  }, [content]);
+
+  return (
+    <>
+      {elements.map((item, index) => {
+        if (item.type === "link") {
+          return <LinkPreview key={`link-${index}`} url={item.url} />;
+        }
+        return (
+          <div
+            key={`html-${index}`}
+            dangerouslySetInnerHTML={{ __html: item.content }}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 const CardFooter = styled.div`
   display: flex;
@@ -461,7 +526,9 @@ export default function AgendaPage() {
                   </PriorityBadge>
                 </CardHeader>
                 <CardTitle>{agenda.title}</CardTitle>
-                <CardDescription>{agenda.description}</CardDescription>
+                <CardDescription>
+                  <AgendaDescriptionRenderer content={agenda.description} />
+                </CardDescription>
                 <CardFooter>
                   <CardMeta>
                     <div>{agenda.category}</div>

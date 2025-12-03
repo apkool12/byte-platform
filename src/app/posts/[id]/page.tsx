@@ -254,9 +254,9 @@ const AccessDenied = styled.div`
 `;
 
 // 게시글 내용 요소 타입
-type ContentElement = 
-  | { type: 'html'; content: string }
-  | { type: 'link'; content: string; url: string };
+type ContentElement =
+  | { type: "html"; content: string }
+  | { type: "link"; content: string; url: string };
 
 // 더 나은 방법: HTML을 파싱해서 직접 렌더링
 function ContentRendererV2({ content }: { content: string }) {
@@ -272,28 +272,31 @@ function ContentRendererV2({ content }: { content: string }) {
     while ((match = linkPattern.exec(content)) !== null) {
       // 링크 전의 HTML 추가
       if (match.index > lastIndex) {
-        parts.push({ type: 'html', content: content.substring(lastIndex, match.index) });
+        parts.push({
+          type: "html",
+          content: content.substring(lastIndex, match.index),
+        });
       }
       // 링크 URL 추출
       const urlMatch = match[1];
       if (urlMatch) {
-        parts.push({ type: 'link', content: '', url: urlMatch });
+        parts.push({ type: "link", content: "", url: urlMatch });
       }
       lastIndex = match.index + match[0].length;
     }
 
     // 남은 HTML 추가
     if (lastIndex < content.length) {
-      parts.push({ type: 'html', content: content.substring(lastIndex) });
+      parts.push({ type: "html", content: content.substring(lastIndex) });
     }
 
-    return parts.length > 0 ? parts : [{ type: 'html', content }];
+    return parts.length > 0 ? parts : [{ type: "html", content }];
   }, [content]);
 
   return (
     <>
       {elements.map((item, index) => {
-        if (item.type === 'link') {
+        if (item.type === "link") {
           return <LinkPreview key={`link-${index}`} url={item.url} />;
         }
         return (

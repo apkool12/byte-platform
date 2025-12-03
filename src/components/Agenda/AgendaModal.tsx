@@ -13,6 +13,7 @@ import {
 import { usersApi, postsApi, eventsApi } from "@/lib/api";
 import { DEPARTMENTS } from "@/types/member";
 import CustomDropdown from "./CustomDropdown";
+import RichTextEditor from "@/components/Posts/RichTextEditor";
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -104,25 +105,6 @@ const Input = styled.input`
   }
 `;
 
-const Textarea = styled.textarea`
-  padding: 0.875rem 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-  outline: none;
-  resize: vertical;
-  min-height: 120px;
-  font-family: inherit;
-
-  &:focus {
-    background-color: #fff;
-    border-color: #1d1d1f;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-  }
-`;
 
 const Row = styled.div`
   display: grid;
@@ -207,6 +189,7 @@ export default function AgendaModal({
   const [users, setUsers] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -217,6 +200,7 @@ export default function AgendaModal({
           eventsApi.getAll(),
         ]);
         setUsers(usersRes.users);
+        setMembers(usersRes.users);
         setPosts(postsRes.posts);
         setEvents(eventsRes.events);
       } catch (error) {
@@ -323,12 +307,13 @@ export default function AgendaModal({
 
               <FormGroup>
                 <Label>설명</Label>
-                <Textarea
+                <RichTextEditor
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
+                  onChange={(value) =>
+                    setFormData({ ...formData, description: value })
                   }
-                  placeholder="안건 설명을 입력하세요"
+                  placeholder="안건 설명을 입력하세요..."
+                  members={members}
                 />
               </FormGroup>
 
