@@ -27,7 +27,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
+    setIsSidebarOpen((prev) => {
+      const newState = !prev;
+      console.log('Sidebar toggle:', newState); // 디버깅용
+      return newState;
+    });
   };
 
   const closeSidebar = () => {

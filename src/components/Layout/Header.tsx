@@ -507,7 +507,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            onMenuClick?.();
+            console.log('Menu button clicked'); // 디버깅용
+            if (onMenuClick) {
+              onMenuClick();
+            } else {
+              console.warn('onMenuClick is not defined');
+            }
           }}
           type="button"
         >

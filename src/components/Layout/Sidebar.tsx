@@ -39,8 +39,13 @@ const SidebarContainer = styled.aside<{ $isOpen?: boolean }>`
   z-index: 90;
   transition: transform 0.3s ease-in-out;
   background-color: ${({ theme }) => theme.colors.background};
-  transform: translateX(0);
 
+  /* 데스크탑에서는 항상 표시 */
+  @media (min-width: ${({ theme }) => `calc(${theme.breakpoints.mobile} + 1px)`}) {
+    transform: translateX(0) !important;
+  }
+
+  /* 모바일에서는 상태에 따라 표시/숨김 */
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(-100%)')};
     box-shadow: ${({ theme, $isOpen }) => ($isOpen ? theme.shadows.large : 'none')};
@@ -153,10 +158,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   // 모바일에서 경로 변경 시 사이드바 닫기
   useEffect(() => {
-    if (onClose) {
-      onClose();
+    if (onClose && typeof window !== 'undefined') {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile && isOpen) {
+        onClose();
+      }
     }
-  }, [pathname, onClose]);
+  }, [pathname]); // onClose와 isOpen을 의존성에서 제거하여 무한 루프 방지
 
   return (
     <>

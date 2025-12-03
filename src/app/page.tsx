@@ -33,7 +33,7 @@ const BackgroundGradient = styled.div`
       : "radial-gradient(ellipse at top, #e8eaf0 0%, #d5d9e0 40%, #c8ced8 100%)"};
   z-index: 0;
   overflow: hidden;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -45,10 +45,15 @@ const BackgroundGradient = styled.div`
         : "radial-gradient(circle at 20% 50%, rgba(180, 185, 200, 0.2) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(160, 170, 185, 0.15) 0%, transparent 50%)"};
     animation: float 20s ease-in-out infinite;
   }
-  
+
   @keyframes float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-20px, -20px) scale(1.05); }
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(-20px, -20px) scale(1.05);
+    }
   }
 `;
 
@@ -67,10 +72,11 @@ const LoginCard = styled(motion.div)`
     theme.colors.background === "#0F0F0F"
       ? "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)"
       : "0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)"};
-  border: 1px solid ${({ theme }) =>
-    theme.colors.background === "#0F0F0F"
-      ? "rgba(255, 255, 255, 0.1)"
-      : "rgba(0, 0, 0, 0.08)"};
+  border: 1px solid
+    ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "rgba(255, 255, 255, 0.1)"
+        : "rgba(0, 0, 0, 0.08)"};
   z-index: 1;
   position: relative;
   overflow: hidden;
@@ -89,10 +95,14 @@ const LoginCard = styled(motion.div)`
     animation: rotate 30s linear infinite;
     pointer-events: none;
   }
-  
+
   @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -126,7 +136,7 @@ const Logo = styled(motion.h1)`
     Arial, sans-serif;
   position: relative;
   display: inline-block;
-  
+
   &::after {
     content: "";
     position: absolute;
