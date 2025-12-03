@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "check:emails": "tsx scripts/check-emails.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -32,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.6",
     "prisma": "^5.22.0",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
