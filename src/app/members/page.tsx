@@ -21,6 +21,13 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -34,12 +41,22 @@ const Controls = styled.div`
   display: flex;
   gap: 0.75rem;
   align-items: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 const SearchBar = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+  }
 `;
 
 const SearchInput = styled.input`
@@ -65,6 +82,13 @@ const SearchInput = styled.input`
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.text.tertiary};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+    &:focus {
+      width: 100%;
+    }
   }
 `;
 
@@ -122,6 +146,10 @@ const FilterDropdown = styled.select`
     border-color: ${({ theme }) => theme.colors.primary};
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+  }
 `;
 
 const TableContainer = styled.div`
@@ -130,12 +158,21 @@ const TableContainer = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.small};
   border: 1px solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  min-width: 900px;
 `;
 
 const Th = styled.th`

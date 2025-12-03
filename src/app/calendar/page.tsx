@@ -22,6 +22,13 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2.5rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -35,6 +42,11 @@ const Controls = styled.div`
   display: flex;
   gap: 1rem;
   align-items: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    justify-content: space-between;
+    width: 100%;
+  }
 `;
 
 const MonthNav = styled.div`
@@ -45,6 +57,11 @@ const MonthNav = styled.div`
   border-radius: 12px;
   padding: 0.5rem;
   border: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex: 1;
+    justify-content: center;
+  }
 `;
 
 const MonthTitle = styled.h2`
@@ -120,6 +137,11 @@ const CalendarGrid = styled.div`
   padding: 2rem;
   box-shadow: ${({ theme }) => theme.shadows.small};
   border: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding: 1rem;
+    border-radius: 16px;
+  }
 `;
 
 const WeekDays = styled.div`
@@ -129,6 +151,12 @@ const WeekDays = styled.div`
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+  }
 `;
 
 const WeekDay = styled.div`
@@ -139,12 +167,21 @@ const WeekDay = styled.div`
   padding: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
 `;
 
 const DaysGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.75rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    gap: 0.25rem;
+  }
 `;
 
 const DateCell = styled(motion.div)<{ $isToday: boolean; $isCurrentMonth: boolean; $isInRange: boolean; $isRangeStart: boolean; $isRangeEnd: boolean }>`
@@ -172,6 +209,12 @@ const DateCell = styled(motion.div)<{ $isToday: boolean; $isCurrentMonth: boolea
       return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)';
     }};
     transform: scale(1.02);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    min-height: 70px;
+    padding: 0.25rem;
+    border-radius: 8px;
   }
 `;
 
@@ -209,6 +252,18 @@ const EventItem = styled(motion.div)`
   &:hover {
     background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC'};
     transform: translateX(2px);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+    border-radius: 4px;
+  }
+`;
+
+const ButtonText = styled.span`
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: none;
   }
 `;
 
@@ -427,7 +482,7 @@ export default function CalendarPage() {
           </MonthNav>
           <Button $primary whileTap={{ scale: 0.95 }} onClick={handleAddEvent}>
             <Plus size={16} />
-            <span>일정 추가</span>
+            <ButtonText>일정 추가</ButtonText>
           </Button>
         </Controls>
       </Header>

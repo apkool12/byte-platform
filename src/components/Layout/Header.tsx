@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import Link from "next/link";
-import { Bell, LogOut, User, Settings } from "lucide-react";
+import { Bell, LogOut, User, Settings, Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,12 +24,36 @@ const HeaderContainer = styled.header`
   justify-content: space-between;
   padding: 0 2rem;
   z-index: 100;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding: 0 1rem;
+  }
 `;
 
 const LeftSection = styled.div`
   display: flex;
   align-items: center;
   gap: 2rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    gap: 1rem;
+  }
+`;
+
+const MenuButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.text.primary};
+  padding: 0.5rem;
+  margin-right: -0.5rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const Logo = styled(Link)`
@@ -63,6 +87,10 @@ const Slogan = styled.div`
     width: 1px;
     height: 16px;
     background-color: ${({ theme }) => theme.colors.border};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: none;
   }
 `;
 
@@ -299,7 +327,11 @@ const EmptyNotification = styled.div`
   font-size: 0.9rem;
 `;
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
@@ -470,6 +502,9 @@ export default function Header() {
   return (
     <HeaderContainer>
       <LeftSection>
+        <MenuButton onClick={onMenuClick}>
+          <Menu size={24} />
+        </MenuButton>
         <Logo href="/dashboard">BYTE</Logo>
         <Slogan>Run Together, Think Shaper</Slogan>
       </LeftSection>
