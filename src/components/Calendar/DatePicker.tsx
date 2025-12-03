@@ -15,10 +15,10 @@ const DateInputButton = styled.button`
   width: 100%;
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   cursor: pointer;
   display: flex;
@@ -27,15 +27,15 @@ const DateInputButton = styled.button`
   text-align: left;
 
   &:hover {
-    border-color: #1d1d1f;
-    background-color: #fff;
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   }
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -48,10 +48,10 @@ const CalendarDropdown = styled(motion.div)`
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   padding: 1.25rem;
   z-index: 1000;
   min-width: 320px;
@@ -73,14 +73,14 @@ const MonthNav = styled.div`
 const MonthTitle = styled.div`
   font-size: 1rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   min-width: 120px;
   text-align: center;
 `;
 
 const NavButton = styled.button`
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -88,11 +88,11 @@ const NavButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -107,7 +107,7 @@ const WeekDay = styled.div`
   text-align: center;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   padding: 0.5rem;
 `;
 
@@ -121,29 +121,33 @@ const DayButton = styled.button<{ $isToday: boolean; $isSelected: boolean; $isCu
   aspect-ratio: 1;
   border-radius: 8px;
   border: none;
-  background-color: ${({ $isToday, $isSelected }) => {
-    if ($isSelected) return '#1d1d1f';
-    if ($isToday) return '#f5f5f7';
+  background-color: ${({ theme, $isToday, $isSelected }) => {
+    if ($isSelected) return theme.colors.primary;
+    if ($isToday) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.1)' : theme.colors.background;
     return 'transparent';
   }};
-  color: ${({ $isToday, $isSelected, $isCurrentMonth }) => {
+  color: ${({ theme, $isToday, $isSelected, $isCurrentMonth }) => {
     if ($isSelected) return '#fff';
-    if ($isToday) return '#1d1d1f';
-    if (!$isCurrentMonth) return '#ccc';
-    return '#1d1d1f';
+    if ($isToday) return theme.colors.primary;
+    if (!$isCurrentMonth) return theme.colors.text.tertiary;
+    return theme.colors.text.primary;
   }};
   font-size: 0.875rem;
   font-weight: ${({ $isToday, $isSelected }) => ($isToday || $isSelected ? 600 : 400)};
   cursor: pointer;
   transition: all 0.2s;
-  border: ${({ $isToday, $isSelected }) => {
-    if ($isSelected) return '2px solid #1d1d1f';
-    if ($isToday) return '2px solid #1d1d1f';
+  border: ${({ theme, $isToday, $isSelected }) => {
+    if ($isSelected) return `2px solid ${theme.colors.primary}`;
+    if ($isToday) return `2px solid ${theme.colors.primary}`;
     return '2px solid transparent';
   }};
 
   &:hover {
-    background-color: ${({ $isSelected }) => ($isSelected ? '#000' : 'rgba(0, 0, 0, 0.05)')};
+    background-color: ${({ theme, $isSelected }) => 
+      $isSelected 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)')
+    };
   }
 
   &:disabled {

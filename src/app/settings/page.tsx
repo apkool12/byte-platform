@@ -81,7 +81,7 @@ const SettingItem = styled.div<{ $clickable?: boolean }>`
       theme.colors.background === "#0F0F0F"
         ? "rgba(255, 255, 255, 0.08)"
         : "#f5f5f7"};
-    }
+  }
 `;
 
 const SettingLeft = styled.div`

@@ -57,7 +57,7 @@ const NavBtn = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0,0,0,0.05);
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.05)'};
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
@@ -108,8 +108,8 @@ const DateCell = styled(motion.button)<{ $isToday: boolean; $isCurrentMonth: boo
   }};
 
   background-color: ${({ theme, $isToday, $isSelected }) => {
-    if ($isSelected) return theme.colors.text.primary; // Black
-    if ($isToday) return '#1D1D1F'; // Black instead of Red
+    if ($isSelected) return theme.colors.primary;
+    if ($isToday) return theme.colors.primary;
     return 'transparent';
   }};
 
@@ -117,7 +117,9 @@ const DateCell = styled(motion.button)<{ $isToday: boolean; $isCurrentMonth: boo
 
   &:hover {
     background-color: ${({ theme, $isToday, $isSelected }) => 
-      !$isToday && !$isSelected ? 'rgba(0,0,0,0.05)' : undefined};
+      !$isToday && !$isSelected 
+        ? (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.05)')
+        : undefined};
   }
 `;
 
@@ -133,7 +135,7 @@ const Dot = styled.div<{ $color: string }>`
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.text.primary}; /* Force Black */
+  background-color: ${({ theme }) => theme.colors.primary};
   opacity: 0.8;
 `;
 
@@ -155,13 +157,13 @@ const ModalOverlay = styled(motion.div)`
 
 const ModalContent = styled(motion.div)`
   width: 85%;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   padding: 1.5rem;
   z-index: 20;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const ModalHeader = styled.div`
@@ -178,7 +180,7 @@ const ModalDate = styled.h3`
 `;
 
 const CloseButton = styled.button`
-  background: rgba(0, 0, 0, 0.05);
+  background: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : 'rgba(0, 0, 0, 0.05)'};
   border: none;
   border-radius: 50%;
   width: 28px;
@@ -190,7 +192,7 @@ const CloseButton = styled.button`
   color: ${({ theme }) => theme.colors.text.secondary};
   
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'};
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
