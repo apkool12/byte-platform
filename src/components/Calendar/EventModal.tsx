@@ -368,7 +368,7 @@ export default function EventModal({
       alert("제목과 날짜는 필수 항목입니다.");
       return;
     }
-    
+
     if (formData.isPeriod && !formData.endDate) {
       alert("여러 날짜에 걸친 일정인 경우 종료 날짜를 입력해주세요.");
       return;
@@ -389,7 +389,10 @@ export default function EventModal({
       category: formData.category,
       postId: formData.postId,
       color: "#1d1d1f",
-      allowedDepartments: formData.allowedDepartments.length > 0 ? formData.allowedDepartments : undefined,
+      allowedDepartments:
+        formData.allowedDepartments.length > 0
+          ? formData.allowedDepartments
+          : undefined,
       updatedAt: new Date().toISOString(),
     };
 
@@ -419,10 +422,10 @@ export default function EventModal({
   };
 
   const handleDepartmentToggle = (dept: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       allowedDepartments: prev.allowedDepartments.includes(dept)
-        ? prev.allowedDepartments.filter(d => d !== dept)
+        ? prev.allowedDepartments.filter((d) => d !== dept)
         : [...prev.allowedDepartments, dept],
     }));
   };
@@ -612,11 +615,12 @@ export default function EventModal({
               <FormGroup>
                 <Label>특정 부서만 보기 (선택사항)</Label>
                 <HintText>
-                  선택한 부서에 속한 회원만 이 일정을 볼 수 있습니다. 선택하지 않으면 전체 공개됩니다.
+                  선택한 부서에 속한 회원만 이 일정을 볼 수 있습니다. 선택하지
+                  않으면 전체 공개됩니다.
                 </HintText>
                 <CheckboxGroup>
                   <DepartmentCheckboxes>
-                    {DEPARTMENTS.map(dept => (
+                    {DEPARTMENTS.map((dept) => (
                       <CheckboxLabel key={dept}>
                         <Checkbox
                           type="checkbox"
