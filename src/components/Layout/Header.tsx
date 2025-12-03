@@ -503,7 +503,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
   return (
     <HeaderContainer>
       <LeftSection>
-        <MenuButton onClick={onMenuClick}>
+        <MenuButton 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onMenuClick?.();
+          }}
+          type="button"
+        >
           <Menu size={24} />
         </MenuButton>
         <Logo href="/dashboard">BYTE</Logo>

@@ -64,7 +64,8 @@ const Logo = styled.h1`
   color: ${({ theme }) => theme.colors.text.primary};
   letter-spacing: -1px;
   margin-bottom: 0.5rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 `;
 
 const Subtitle = styled.p`
@@ -86,11 +87,10 @@ const InputGroup = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  background: ${({ theme }) => 
-    theme.colors.background === "#0F0F0F" 
-      ? "rgba(255, 255, 255, 0.05)" 
-      : "#F5F5F7"
-  };
+  background: ${({ theme }) =>
+    theme.colors.background === "#0F0F0F"
+      ? "rgba(255, 255, 255, 0.05)"
+      : "#F5F5F7"};
   border: 1px solid transparent;
   border-radius: 16px;
   color: ${({ theme }) => theme.colors.text.primary};
@@ -105,11 +105,11 @@ const Input = styled.input`
   &:focus {
     background: ${({ theme }) => theme.colors.surfaceOpaque};
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 4px ${({ theme }) => 
-      theme.colors.background === "#0F0F0F" 
-        ? "rgba(62, 166, 255, 0.1)" 
-        : "rgba(0, 122, 255, 0.1)"
-    };
+    box-shadow: 0 0 0 4px
+      ${({ theme }) =>
+        theme.colors.background === "#0F0F0F"
+          ? "rgba(62, 166, 255, 0.1)"
+          : "rgba(0, 122, 255, 0.1)"};
   }
 `;
 
@@ -242,7 +242,7 @@ export default function LandingPage() {
     <Container>
       <BackgroundGradient />
       <Badge>국립한밭대학교 제 42대 컴퓨터공학과 학생회</Badge>
-      
+
       <LoginCard
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

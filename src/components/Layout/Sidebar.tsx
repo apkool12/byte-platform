@@ -38,7 +38,8 @@ const SidebarContainer = styled.aside<{ $isOpen?: boolean }>`
   padding: 2rem 1.25rem;
   z-index: 90;
   transition: transform 0.3s ease-in-out;
-  background-color: ${({ theme }) => theme.colors.background}; // 배경색 추가
+  background-color: ${({ theme }) => theme.colors.background};
+  transform: translateX(0);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(-100%)')};
