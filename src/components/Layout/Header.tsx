@@ -16,7 +16,7 @@ const HeaderContainer = styled.header`
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: ${({ theme }) => theme.colors.surface};
   backdrop-filter: blur(10px);
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
@@ -49,7 +49,7 @@ const Logo = styled(Link)`
 const Slogan = styled.div`
   font-size: 0.9rem;
   font-weight: 400;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   letter-spacing: 0.3px;
   position: relative;
   padding-left: 1.5rem;
@@ -62,7 +62,7 @@ const Slogan = styled.div`
     transform: translateY(-50%);
     width: 1px;
     height: 16px;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: ${({ theme }) => theme.colors.border};
   }
 `;
 
@@ -85,7 +85,11 @@ const IconButton = styled.button`
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;

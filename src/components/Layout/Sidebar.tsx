@@ -42,7 +42,7 @@ const SidebarBackground = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: ${({ theme }) => theme.colors.surface};
   backdrop-filter: ${({ theme }) => theme.blur.default};
   border-right: 1px solid ${({ theme }) => theme.colors.border};
   z-index: -1;
@@ -54,11 +54,11 @@ const SidebarGlow = styled.div`
   right: -2px;
   bottom: 0;
   width: 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(238, 192, 198, 0.8) 0%,
-    #87d3f6 100%
-  );
+  background: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' // 다크모드 체크
+      ? `linear-gradient(180deg, rgba(62, 166, 255, 0.3) 0%, rgba(62, 166, 255, 0.1) 100%)`
+      : `linear-gradient(180deg, rgba(238, 192, 198, 0.8) 0%, #87d3f6 100%)`
+  };
   opacity: 0.8;
   filter: blur(20px);
   border-top-right-radius: 30px;
@@ -86,7 +86,7 @@ const NavItem = styled(Link)<{ $active?: boolean }>`
   color: ${({ theme, $active }) =>
     $active ? theme.colors.text.primary : theme.colors.text.secondary};
   background-color: ${({ theme, $active }) =>
-    $active ? "#FFFFFF" : "transparent"};
+    $active ? theme.colors.surfaceOpaque : "transparent"};
   box-shadow: ${({ theme, $active }) =>
     $active ? theme.shadows.small : "none"};
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -94,8 +94,13 @@ const NavItem = styled(Link)<{ $active?: boolean }>`
   font-size: 0.95rem;
 
   &:hover {
-    background-color: ${({ theme, $active }) =>
-      $active ? "#FFFFFF" : "rgba(0, 0, 0, 0.03)"};
+    background-color: ${({ theme, $active }) => {
+      if ($active) return theme.colors.surfaceOpaque;
+      // 다크모드와 라이트모드에 맞는 hover 색상
+      return theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : 'rgba(0, 0, 0, 0.03)';
+    }};
     color: ${({ theme }) => theme.colors.text.primary};
     transform: ${({ $active }) => ($active ? "none" : "translateX(4px)")};
   }

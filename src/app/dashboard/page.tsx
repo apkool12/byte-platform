@@ -68,7 +68,7 @@ const Card = styled(motion.div)<{ $colSpan?: number; $rowSpan?: number; $bg?: st
   flex-direction: column;
   color: ${({ theme, $dark }) => $dark ? '#FFFFFF' : theme.colors.text.primary};
   cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const StatHeader = styled.div`

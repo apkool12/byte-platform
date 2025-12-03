@@ -56,16 +56,16 @@ const SectionTitle = styled.h2`
 `;
 
 const SettingsCard = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
 `;
 
 const SettingItem = styled.div<{ $clickable?: boolean }>`
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,7 +77,11 @@ const SettingItem = styled.div<{ $clickable?: boolean }>`
   }
 
   &:hover {
-    background-color: #f5f5f7;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.03)' 
+        : theme.colors.background
+    };
   }
 `;
 
@@ -110,7 +114,7 @@ const SettingLabel = styled.div`
 
 const SettingDescription = styled.div`
   font-size: 0.8rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Toggle = styled.button<{ $active: boolean }>`
@@ -118,7 +122,11 @@ const Toggle = styled.button<{ $active: boolean }>`
   height: 30px;
   border-radius: 15px;
   border: none;
-  background-color: ${({ $active }) => ($active ? "#1d1d1f" : "#e5e5ea")};
+  background-color: ${({ theme, $active }) => 
+    $active 
+      ? theme.colors.primary 
+      : (theme.colors.background === '#0F0F0F' ? '#3F3F3F' : '#e5e5ea')
+  };
   position: relative;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -129,23 +137,25 @@ const Toggle = styled.button<{ $active: boolean }>`
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : '#fff'
+    };
     top: 2px;
     left: ${({ $active }) => ($active ? "22px" : "2px")};
     transition: left 0.2s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: ${({ theme }) => theme.shadows.small};
   }
 `;
 
 const Select = styled.select`
   padding: 0.5rem 2rem 0.5rem 0.75rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.9rem;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22${({ theme }) => theme.colors.background === '#0F0F0F' ? '%23fff' : '%23333'}%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-position: right 0.5rem top 50%;
   background-size: 0.65rem auto;
@@ -153,8 +163,12 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(62, 166, 255, 0.2)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
   }
 `;
 
@@ -165,16 +179,21 @@ const Button = styled(motion.button)`
   padding: 1rem 1.5rem;
   border-radius: 12px;
   border: none;
-  background-color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.primary};
   color: white;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   margin-top: 2rem;
   width: 100%;
+  transition: background-color 0.2s;
 
   &:hover {
-    background-color: #000;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? '#5BB0FF' 
+        : '#0066CC'
+    };
   }
 `;
 

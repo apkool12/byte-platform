@@ -35,14 +35,14 @@ export const lightTheme = {
 
 export const darkTheme = {
   colors: {
-    background: '#000000', // Dark background
-    surface: 'rgba(28, 28, 30, 0.8)', // Dark surface with transparency
-    surfaceOpaque: '#1C1C1E', // Dark surface opaque
-    primary: '#0A84FF', // Slightly lighter blue for dark mode
+    background: '#0F0F0F', // YouTube-style dark gray background
+    surface: 'rgba(30, 30, 30, 0.9)', // Dark surface with transparency
+    surfaceOpaque: '#181818', // YouTube-style dark surface opaque
+    primary: '#3EA6FF', // YouTube-style blue for dark mode
     text: {
       primary: '#FFFFFF',
-      secondary: '#98989D',
-      tertiary: '#636366',
+      secondary: '#AAAAAA', // Slightly lighter gray for better readability
+      tertiary: '#717171',
     },
     border: 'rgba(255, 255, 255, 0.1)',
     success: '#30D158',
@@ -50,10 +50,10 @@ export const darkTheme = {
     error: '#FF453A',
   },
   shadows: {
-    small: '0 2px 8px rgba(0, 0, 0, 0.3)',
-    medium: '0 12px 24px rgba(0, 0, 0, 0.4)',
-    large: '0 24px 48px rgba(0, 0, 0, 0.5)',
-    glow: '0 0 20px rgba(10, 132, 255, 0.3)',
+    small: '0 2px 8px rgba(0, 0, 0, 0.5)',
+    medium: '0 12px 24px rgba(0, 0, 0, 0.6)',
+    large: '0 24px 48px rgba(0, 0, 0, 0.7)',
+    glow: '0 0 20px rgba(62, 166, 255, 0.3)',
   },
   borderRadius: {
     small: '10px',
