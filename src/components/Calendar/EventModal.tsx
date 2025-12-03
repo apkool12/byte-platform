@@ -27,25 +27,33 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   width: 100%;
   max-width: 600px;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   position: relative;
   overflow-y: auto;
   max-height: 90vh;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  background: #f5f5f7;
+  background: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border: none;
   cursor: pointer;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -55,8 +63,8 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #e5e5ea;
-    color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#e5e5ea'};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -64,7 +72,7 @@ const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1.75rem;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Form = styled.form`
@@ -83,35 +91,35 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-size: 0.85rem;
   font-weight: 600;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Input = styled.input`
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   width: 100%;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
 const TextArea = styled.textarea`
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   width: 100%;
   min-height: 100px;
@@ -121,9 +129,9 @@ const TextArea = styled.textarea`
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -135,10 +143,10 @@ const SelectWrapper = styled.div`
 const Select = styled.select`
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   width: 100%;
   cursor: pointer;
@@ -147,9 +155,9 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -169,18 +177,18 @@ const ButtonGroup = styled.div`
 const Button = styled.button<{ $primary?: boolean; $danger?: boolean }>`
   padding: 0.85rem 1.5rem;
   border-radius: 10px;
-  border: ${({ $primary, $danger }) => {
+  border: ${({ theme, $primary, $danger }) => {
     if ($primary || $danger) return "none";
-    return "1px solid rgba(0, 0, 0, 0.08)";
+    return `1px solid ${theme.colors.border}`;
   }};
-  background-color: ${({ $primary, $danger }) => {
-    if ($danger) return "#dc3545";
-    if ($primary) return "#1d1d1f";
-    return "#fff";
+  background-color: ${({ theme, $primary, $danger }) => {
+    if ($danger) return theme.colors.error;
+    if ($primary) return theme.colors.primary;
+    return theme.colors.surfaceOpaque;
   }};
-  color: ${({ $primary, $danger }) => {
+  color: ${({ theme, $primary, $danger }) => {
     if ($primary || $danger) return "#fff";
-    return "#1d1d1f";
+    return theme.colors.text.primary;
   }};
   font-size: 0.95rem;
   font-weight: 600;
@@ -191,10 +199,10 @@ const Button = styled.button<{ $primary?: boolean; $danger?: boolean }>`
   gap: 0.5rem;
 
   &:hover {
-    background-color: ${({ $primary, $danger }) => {
+    background-color: ${({ theme, $primary, $danger }) => {
       if ($danger) return "#c82333";
-      if ($primary) return "#000";
-      return "#f5f5f7";
+      if ($primary) return theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC';
+      return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7';
     }};
   }
 
@@ -225,15 +233,15 @@ const CheckboxWrapper = styled.div`
   gap: 0.5rem;
   padding: 0.75rem;
   border-radius: 8px;
-  background-color: #fbfbfd;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const Checkbox = styled.input`
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #1d1d1f;
+  accent-color: ${({ theme }) => theme.colors.primary};
 `;
 
 const PostLink = styled.div`
@@ -241,19 +249,19 @@ const PostLink = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: #f5f5f7;
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border-radius: 8px;
   font-size: 0.9rem;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-top: 0.5rem;
 `;
 
 const HintText = styled.div`
   margin-top: 0.5rem;
   font-size: 0.85rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   padding: 0.5rem 0.75rem;
-  background-color: #fbfbfd;
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border-radius: 8px;
 `;
 
@@ -268,9 +276,9 @@ const DepartmentCheckboxes = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.75rem;
-  background-color: #fbfbfd;
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const CheckboxLabel = styled.label`
@@ -280,14 +288,14 @@ const CheckboxLabel = styled.label`
   cursor: pointer;
   font-size: 0.9rem;
   padding: 0.5rem 0.75rem;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f5f5f7;
-    border-color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7'};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -368,7 +376,7 @@ export default function EventModal({
       alert("제목과 날짜는 필수 항목입니다.");
       return;
     }
-    
+
     if (formData.isPeriod && !formData.endDate) {
       alert("여러 날짜에 걸친 일정인 경우 종료 날짜를 입력해주세요.");
       return;
@@ -389,7 +397,10 @@ export default function EventModal({
       category: formData.category,
       postId: formData.postId,
       color: "#1d1d1f",
-      allowedDepartments: formData.allowedDepartments.length > 0 ? formData.allowedDepartments : undefined,
+      allowedDepartments:
+        formData.allowedDepartments.length > 0
+          ? formData.allowedDepartments
+          : undefined,
       updatedAt: new Date().toISOString(),
     };
 
@@ -419,10 +430,10 @@ export default function EventModal({
   };
 
   const handleDepartmentToggle = (dept: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       allowedDepartments: prev.allowedDepartments.includes(dept)
-        ? prev.allowedDepartments.filter(d => d !== dept)
+        ? prev.allowedDepartments.filter((d) => d !== dept)
         : [...prev.allowedDepartments, dept],
     }));
   };
@@ -612,11 +623,12 @@ export default function EventModal({
               <FormGroup>
                 <Label>특정 부서만 보기 (선택사항)</Label>
                 <HintText>
-                  선택한 부서에 속한 회원만 이 일정을 볼 수 있습니다. 선택하지 않으면 전체 공개됩니다.
+                  선택한 부서에 속한 회원만 이 일정을 볼 수 있습니다. 선택하지
+                  않으면 전체 공개됩니다.
                 </HintText>
                 <CheckboxGroup>
                   <DepartmentCheckboxes>
-                    {DEPARTMENTS.map(dept => (
+                    {DEPARTMENTS.map((dept) => (
                       <CheckboxLabel key={dept}>
                         <Checkbox
                           type="checkbox"

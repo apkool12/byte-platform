@@ -10,12 +10,13 @@ export interface ApiUser {
   email: string;
   password?: string;
   studentId: string;
-  role: "회장" | "부회장" | "부장" | "부원";
+  role: "회장" | "부회장" | "부장" | "부원" | "스태프";
   department: string;
   phone: string;
   active: boolean;
   approved: boolean;
   profileImage?: string;
+  emailNotificationEnabled?: boolean;
   createdAt: string;
 }
 
@@ -30,7 +31,7 @@ export interface ApiPost {
   views: number;
   category: "공지" | "일반" | "회의록";
   pinned?: boolean;
-  attachments?: string[];
+  attachments?: (string | { name: string; data?: string })[];
   permission?: {
     read: "전체" | "부장 이상" | "특정 부서" | "작성자만";
     write?: "전체" | "부장 이상" | "특정 부서" | "작성자만";
@@ -90,6 +91,8 @@ class DataStore {
         role: user.role as ApiUser["role"],
         profileImage: user.profileImage ?? undefined,
         approved: userWithApproved.approved ?? false,
+        emailNotificationEnabled:
+          userWithApproved.emailNotificationEnabled ?? true,
         createdAt: user.createdAt.toISOString(),
       };
     });
@@ -110,9 +113,39 @@ class DataStore {
           role: user.role as ApiUser["role"],
           profileImage: user.profileImage ?? undefined,
           approved: userWithApproved.approved ?? false,
+          emailNotificationEnabled:
+            userWithApproved.emailNotificationEnabled ?? true,
           createdAt: user.createdAt.toISOString(),
         } as ApiUser;
       });
+  }
+
+  async getUserByEmailOrName(identifier: string): Promise<ApiUser | undefined> {
+    // 이메일 또는 이름으로 사용자 찾기
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { name: identifier }],
+      },
+    });
+
+    if (!user) return undefined;
+
+    const userWithApproved = user as any;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      studentId: user.studentId || "",
+      role: user.role as ApiUser["role"],
+      department: user.department || "",
+      phone: user.phone || "",
+      active: user.active,
+      approved: userWithApproved.approved ?? false,
+      profileImage: user.profileImage ?? undefined,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
 
   async getUserByEmail(email: string): Promise<ApiUser | undefined> {
@@ -128,8 +161,41 @@ class DataStore {
       role: user.role as ApiUser["role"],
       profileImage: user.profileImage ?? undefined,
       approved: userWithApproved.approved ?? false,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
+  }
+
+  async getUserByEmailOrNameWithPassword(
+    identifier: string
+  ): Promise<ApiUser | undefined> {
+    // 이메일 또는 이름으로 사용자 찾기 (비밀번호 포함)
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { name: identifier }],
+      },
+    });
+
+    if (!user) return undefined;
+
+    const userWithApproved = user as any;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      password: user.password || undefined,
+      studentId: user.studentId || "",
+      role: user.role as ApiUser["role"],
+      department: user.department || "",
+      phone: user.phone || "",
+      active: user.active,
+      approved: userWithApproved.approved ?? false,
+      profileImage: user.profileImage ?? undefined,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
 
   async getUserByEmailWithPassword(
@@ -139,8 +205,11 @@ class DataStore {
       where: { email },
     });
     if (!user) return undefined;
+    const userWithApproved = user as any;
     return {
       ...user,
+      emailNotificationEnabled:
+        userWithApproved.emailNotificationEnabled ?? true,
       createdAt: user.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -158,6 +227,7 @@ class DataStore {
         active: user.active,
         approved: user.approved ?? false,
         profileImage: user.profileImage,
+        emailNotificationEnabled: user.emailNotificationEnabled ?? true, // 기본값 true
       } as any,
     });
     const { password, ...userWithoutPassword } = newUser;
@@ -166,6 +236,8 @@ class DataStore {
       ...userWithoutPassword,
       password: undefined,
       approved: newUserWithApproved.approved ?? false,
+      emailNotificationEnabled:
+        newUserWithApproved.emailNotificationEnabled ?? true,
       createdAt: newUser.createdAt.toISOString(),
     } as ApiUser;
   }
@@ -186,6 +258,8 @@ class DataStore {
     if (updates.approved !== undefined) updateData.approved = updates.approved;
     if (updates.profileImage !== undefined)
       updateData.profileImage = updates.profileImage;
+    if (updates.emailNotificationEnabled !== undefined)
+      updateData.emailNotificationEnabled = updates.emailNotificationEnabled;
 
     try {
       const updated = await prisma.user.update({
@@ -193,9 +267,13 @@ class DataStore {
         data: updateData,
       });
       const { password, ...userWithoutPassword } = updated;
+      const updatedWithApproved = updated as any;
       return {
         ...userWithoutPassword,
         password: undefined,
+        approved: updatedWithApproved.approved ?? false,
+        emailNotificationEnabled:
+          updatedWithApproved.emailNotificationEnabled ?? true,
         createdAt: updated.createdAt.toISOString(),
       } as ApiUser;
     } catch {
@@ -231,7 +309,23 @@ class DataStore {
       views: post.views,
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
-      attachments: post.attachments,
+      attachments: Array.isArray(post.attachments)
+        ? post.attachments.map((a) => {
+            try {
+              // JSON 문자열인 경우 파싱
+              if (
+                typeof a === "string" &&
+                (a.startsWith("{") || a.startsWith("["))
+              ) {
+                return JSON.parse(a);
+              }
+              // 일반 문자열인 경우 (기존 호환성)
+              return a;
+            } catch {
+              return a;
+            }
+          })
+        : [],
       permission: post.permissionRead
         ? {
             read: post.permissionRead as
@@ -268,7 +362,23 @@ class DataStore {
       views: post.views,
       category: post.category as "공지" | "일반" | "회의록",
       pinned: post.pinned,
-      attachments: post.attachments,
+      attachments: Array.isArray(post.attachments)
+        ? post.attachments.map((a) => {
+            try {
+              // JSON 문자열인 경우 파싱
+              if (
+                typeof a === "string" &&
+                (a.startsWith("{") || a.startsWith("["))
+              ) {
+                return JSON.parse(a);
+              }
+              // 일반 문자열인 경우 (기존 호환성)
+              return a;
+            } catch {
+              return a;
+            }
+          })
+        : [],
       permission: post.permissionRead
         ? {
             read: post.permissionRead as
@@ -300,7 +410,11 @@ class DataStore {
         department: post.department,
         category: post.category,
         pinned: post.pinned || false,
-        attachments: post.attachments || [],
+        attachments: Array.isArray(post.attachments)
+          ? post.attachments.map((a) =>
+              typeof a === "string" ? a : JSON.stringify(a)
+            )
+          : [],
         permissionRead: post.permission?.read,
         permissionWrite: post.permission?.write,
         allowedDepartments: post.permission?.allowedDepartments || [],
@@ -767,11 +881,40 @@ export async function initializeData() {
   }
 
   // 초기 회장 계정 (자동 승인)
+  // 환경 변수에서 초기 계정 정보 가져오기 (보안을 위해 환경 변수 필수)
+  const initialAdminName = process.env.INITIAL_ADMIN_NAME;
+  const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL;
+  const initialAdminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+
+  // 환경 변수가 설정되지 않은 경우 초기 계정 생성을 건너뛰기
+  // (프로덕션 환경에서는 반드시 환경 변수 설정 필요)
+  if (!initialAdminName || !initialAdminEmail || !initialAdminPassword) {
+    console.warn(
+      "초기 관리자 계정 생성 스킵: INITIAL_ADMIN_NAME, INITIAL_ADMIN_EMAIL, INITIAL_ADMIN_PASSWORD 환경 변수가 설정되지 않았습니다."
+    );
+    console.warn(
+      "데이터베이스가 비어있는 경우, 환경 변수를 설정하거나 수동으로 관리자 계정을 생성해주세요."
+    );
+    return;
+  }
+
+  // 이메일 중복 체크
+  const existingUser = await prisma.user.findUnique({
+    where: { email: initialAdminEmail },
+  });
+
+  if (existingUser) {
+    console.warn(
+      `초기 관리자 계정 생성 스킵: ${initialAdminEmail} 이메일의 사용자가 이미 존재합니다.`
+    );
+    return;
+  }
+
   await prisma.user.create({
     data: {
-      name: "우은식",
-      email: "apkool12@naver.com",
-      password: hashPassword("Live_050822!@"),
+      name: initialAdminName,
+      email: initialAdminEmail,
+      password: hashPassword(initialAdminPassword),
       studentId: "",
       role: "회장",
       department: "총관리",
@@ -780,4 +923,8 @@ export async function initializeData() {
       approved: true, // 회장은 자동 승인
     } as any,
   });
+
+  console.log(
+    `초기 관리자 계정 생성 완료: ${initialAdminName} (${initialAdminEmail})`
+  );
 }

@@ -26,25 +26,33 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   width: 100%;
   max-width: 900px;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   position: relative;
   overflow-y: auto;
   max-height: 90vh;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  background: #f5f5f7;
+  background: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border: none;
   cursor: pointer;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -54,8 +62,8 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #e5e5ea;
-    color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#e5e5ea'};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -63,7 +71,7 @@ const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 1.75rem;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Form = styled.form`
@@ -82,25 +90,25 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-size: 0.85rem;
   font-weight: 600;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const Input = styled.input`
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   width: 100%;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -113,10 +121,10 @@ const SelectWrapper = styled.div`
 const Select = styled.select`
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   width: 100%;
   cursor: pointer;
@@ -125,9 +133,9 @@ const Select = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -136,9 +144,9 @@ const CheckboxGroup = styled.div`
   flex-direction: column;
   gap: 0.75rem;
   padding: 1.25rem;
-  background-color: #fbfbfd;
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   margin-top: 0.75rem;
 `;
 
@@ -148,14 +156,14 @@ const CheckboxLabel = styled.label`
   gap: 0.75rem;
   cursor: pointer;
   font-size: 0.9rem;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   padding: 0.625rem 0.875rem;
   border-radius: 8px;
   transition: all 0.2s;
   user-select: none;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)'};
   }
 `;
 
@@ -172,15 +180,15 @@ const Checkbox = styled.input`
   cursor: pointer;
   margin: 0;
   appearance: none;
-  border: 2px solid rgba(0, 0, 0, 0.2);
+  border: 2px solid ${({ theme }) => theme.colors.border};
   border-radius: 5px;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   transition: all 0.2s;
   position: relative;
 
   &:checked {
-    background-color: #1d1d1f;
-    border-color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 
   &:checked::before {
@@ -196,7 +204,7 @@ const Checkbox = styled.input`
   }
 
   &:hover {
-    border-color: #1d1d1f;
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -217,16 +225,20 @@ const ButtonGroup = styled.div`
 const Button = styled.button<{ $primary?: boolean }>`
   padding: 0.85rem 1.5rem;
   border-radius: 10px;
-  border: ${({ $primary }) => ($primary ? 'none' : '1px solid rgba(0, 0, 0, 0.08)')};
-  background-color: ${({ $primary }) => ($primary ? '#1d1d1f' : '#fff')};
-  color: ${({ $primary }) => ($primary ? '#fff' : '#1d1d1f')};
+  border: ${({ theme, $primary }) => ($primary ? 'none' : `1px solid ${theme.colors.border}`)};
+  background-color: ${({ theme, $primary }) => ($primary ? theme.colors.primary : theme.colors.surfaceOpaque)};
+  color: ${({ theme, $primary }) => ($primary ? '#fff' : theme.colors.text.primary)};
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? '#000' : '#f5f5f7')};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
+    };
   }
 
   &:disabled {
@@ -314,15 +326,31 @@ export default function PostModal({ isOpen, onClose, onSubmit, members = [], ini
     return text.trim().length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || isContentEmpty(formData.content)) {
       alert('제목과 내용을 입력해주세요.');
       return;
     }
+    
+    // 파일을 base64로 변환
+    const attachmentsWithData = await Promise.all(
+      attachments.map(async (file) => {
+        return new Promise<{ name: string; data: string }>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64 = (reader.result as string).split(',')[1]; // data:xxx;base64, 부분 제거
+            resolve({ name: file.name, data: base64 });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      })
+    );
+
     const postData = {
       ...formData,
-      attachments: attachments.map(f => f.name),
+      attachments: attachmentsWithData,
       permission: {
         read: formData.permission.read,
         allowedDepartments: formData.permission.read === '특정 부서' 

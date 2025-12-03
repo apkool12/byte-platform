@@ -21,15 +21,23 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 20px;
   padding: 2rem;
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   position: relative;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const CloseButton = styled.button`
@@ -48,7 +56,7 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
@@ -56,13 +64,13 @@ const CloseButton = styled.button`
 const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 0.5rem;
 `;
 
 const DateText = styled.div`
   font-size: 0.95rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: 1.5rem;
 `;
 
@@ -78,29 +86,29 @@ const EventCard = styled(motion.button)`
   text-align: left;
   padding: 1rem;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f5f5f7;
-    border-color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7'};
+    border-color: ${({ theme }) => theme.colors.primary};
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: ${({ theme }) => theme.shadows.medium};
   }
 `;
 
 const EventTitle = styled.div`
   font-size: 1rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 0.25rem;
 `;
 
 const EventMeta = styled.div`
   font-size: 0.85rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
@@ -110,9 +118,9 @@ const AddButton = styled(motion.button)`
   width: 100%;
   padding: 1rem;
   border-radius: 12px;
-  border: 2px dashed rgba(0, 0, 0, 0.15);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  border: 2px dashed ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? theme.colors.surfaceOpaque : theme.colors.background};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -123,8 +131,8 @@ const AddButton = styled(motion.button)`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #fff;
-    border-color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    border-color: ${({ theme }) => theme.colors.primary};
     border-style: solid;
   }
 `;

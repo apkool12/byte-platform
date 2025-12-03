@@ -40,11 +40,23 @@ const List = styled.div`
 const ListItem = styled(motion.div)`
   padding: 1rem;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: ${({ theme }) =>
+      theme.colors.background === "#0F0F0F"
+        ? "rgba(255, 255, 255, 0.08)"
+        : "#f5f5f7"};
+  }
 `;
 
 const PostTitle = styled.h3`
@@ -128,7 +140,10 @@ export default function PostList() {
             <ListItem 
               key={post.id}
               variants={itemVariants}
-              whileHover={{ scale: 1.02, backgroundColor: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+              whileHover={{ 
+                scale: 1.02, 
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)' 
+              }}
               whileTap={{ scale: 0.98 }}
               onClick={() => router.push(`/posts/${post.id}`)}
             >

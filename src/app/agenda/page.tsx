@@ -3,12 +3,13 @@
 import styled from 'styled-components';
 import { motion, Variants } from 'framer-motion';
 import { Plus, Search, Filter, CheckCircle2, Clock, Pause, AlertCircle, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Agenda, AGENDA_CATEGORIES, AGENDA_STATUS, AGENDA_PRIORITY } from '@/types/agenda';
 import { agendasApi } from '@/lib/api';
 import { getCurrentUser } from '@/utils/permissions';
 import AgendaModal from '@/components/Agenda/AgendaModal';
+import LinkPreview from '@/components/Posts/LinkPreview';
 
 const Container = styled.div`
   max-width: 1200px;
@@ -45,8 +46,8 @@ const SearchBar = styled.div`
 const SearchInput = styled.input`
   padding: 0.6rem 1rem 0.6rem 2.25rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   font-size: 0.9rem;
   width: 240px;
   transition: all 0.2s ease;
@@ -54,13 +55,17 @@ const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.text.primary};
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(62, 166, 255, 0.2)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
     width: 280px;
   }
 
   &::placeholder {
-    color: #999;
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 `;
 
@@ -78,16 +83,26 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   gap: 0.5rem;
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  border: ${({ $primary }) => ($primary ? "transparent" : "1px solid rgba(0,0,0,0.08)")};
-  background-color: ${({ $primary }) => ($primary ? "#1d1d1f" : "#fff")};
-  color: ${({ $primary }) => ($primary ? "#fff" : "#1d1d1f")};
+  border: ${({ theme, $primary }) => 
+    $primary ? "transparent" : `1px solid ${theme.colors.border}`
+  };
+  background-color: ${({ theme, $primary }) => 
+    $primary ? theme.colors.primary : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $primary }) => 
+    $primary ? "#fff" : theme.colors.text.primary
+  };
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? "#000" : "#f5f5f7")};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
+    };
   }
 `;
 
@@ -96,22 +111,30 @@ const FilterTabs = styled.div`
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const FilterTab = styled(motion.button)<{ $active: boolean }>`
   padding: 0.5rem 1rem;
   border-radius: 8px;
   border: none;
-  background-color: ${({ $active }) => ($active ? "#1d1d1f" : "transparent")};
-  color: ${({ $active }) => ($active ? "#fff" : "#86868b")};
+  background-color: ${({ theme, $active }) => 
+    $active ? theme.colors.primary : "transparent"
+  };
+  color: ${({ theme, $active }) => 
+    $active ? "#fff" : theme.colors.text.secondary
+  };
   font-size: 0.9rem;
   font-weight: ${({ $active }) => ($active ? 600 : 500)};
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $active }) => ($active ? "#000" : "rgba(0,0,0,0.05)")};
+    background-color: ${({ theme, $active }) => 
+      $active 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0,0,0,0.05)')
+    };
   }
 `;
 
@@ -123,17 +146,17 @@ const AgendaGrid = styled.div`
 `;
 
 const AgendaCard = styled(motion.div)<{ $status: string; $priority: string }>`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadows.small};
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: ${({ theme }) => theme.shadows.medium};
     transform: translateY(-2px);
   }
 `;
@@ -202,16 +225,80 @@ const CardTitle = styled.h3`
   line-height: 1.4;
 `;
 
-const CardDescription = styled.p`
+const CardDescription = styled.div`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.text.secondary};
   line-height: 1.5;
   margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  
+  p {
+    margin: 0 0 0.5rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  div[data-link] {
+    margin: 0.5rem 0;
+  }
 `;
+
+// 안건 설명 렌더러 - 링크 카드를 처리
+type ContentElement =
+  | { type: "html"; content: string }
+  | { type: "link"; content: string; url: string };
+
+function AgendaDescriptionRenderer({ content }: { content: string }) {
+  const elements = useMemo((): ContentElement[] => {
+    if (!content) return [];
+
+    // 정규식으로 링크 카드 추출
+    const linkPattern = /<div[^>]*data-link="([^"]*)"[^>]*>.*?<\/div>/gi;
+    const parts: ContentElement[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = linkPattern.exec(content)) !== null) {
+      // 링크 전의 HTML 추가
+      if (match.index > lastIndex) {
+        parts.push({
+          type: "html",
+          content: content.substring(lastIndex, match.index),
+        });
+      }
+      // 링크 URL 추출
+      const urlMatch = match[1];
+      if (urlMatch) {
+        parts.push({ type: "link", content: "", url: urlMatch });
+      }
+      lastIndex = match.index + match[0].length;
+    }
+
+    // 남은 HTML 추가
+    if (lastIndex < content.length) {
+      parts.push({ type: "html", content: content.substring(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: "html", content }];
+  }, [content]);
+
+  return (
+    <>
+      {elements.map((item, index) => {
+        if (item.type === "link") {
+          return <LinkPreview key={`link-${index}`} url={item.url} />;
+        }
+        return (
+          <div
+            key={`html-${index}`}
+            dangerouslySetInnerHTML={{ __html: item.content }}
+          />
+        );
+      })}
+    </>
+  );
+}
 
 const CardFooter = styled.div`
   display: flex;
@@ -461,7 +548,9 @@ export default function AgendaPage() {
                   </PriorityBadge>
                 </CardHeader>
                 <CardTitle>{agenda.title}</CardTitle>
-                <CardDescription>{agenda.description}</CardDescription>
+                <CardDescription>
+                  <AgendaDescriptionRenderer content={agenda.description} />
+                </CardDescription>
                 <CardFooter>
                   <CardMeta>
                     <div>{agenda.category}</div>

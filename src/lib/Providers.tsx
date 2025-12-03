@@ -1,17 +1,16 @@
 'use client';
 
-import { ThemeProvider } from 'styled-components';
 import StyledComponentsRegistry from './registry';
 import GlobalStyle from '@/styles/GlobalStyle';
-import { theme } from '@/styles/theme';
+import { ThemeContextProvider } from '@/contexts/ThemeContext';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <StyledComponentsRegistry>
-      <ThemeProvider theme={theme}>
+      <ThemeContextProvider>
         <GlobalStyle />
         {children}
-      </ThemeProvider>
+      </ThemeContextProvider>
     </StyledComponentsRegistry>
   );
 }

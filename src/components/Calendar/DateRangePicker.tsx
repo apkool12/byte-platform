@@ -31,10 +31,10 @@ const DateInputButton = styled.button`
   width: 100%;
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   font-size: 0.95rem;
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
   cursor: pointer;
   display: flex;
@@ -43,15 +43,15 @@ const DateInputButton = styled.button`
   text-align: left;
 
   &:hover {
-    border-color: #1d1d1f;
-    background-color: #fff;
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   }
 
   &:focus {
     outline: none;
-    border-color: #1d1d1f;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -64,10 +64,10 @@ const CalendarDropdown = styled(motion.div)`
   top: calc(100% + 8px);
   left: 0;
   right: 0;
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   padding: 1.25rem;
   z-index: 1000;
   min-width: 320px;
@@ -89,14 +89,14 @@ const MonthNav = styled.div`
 const MonthTitle = styled.div`
   font-size: 1rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   min-width: 120px;
   text-align: center;
 `;
 
 const NavButton = styled.button`
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -104,11 +104,11 @@ const NavButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -123,7 +123,7 @@ const WeekDay = styled.div`
   text-align: center;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   padding: 0.5rem;
 `;
 
@@ -150,16 +150,16 @@ const DayButton = styled.button<{
     return '8px';
   }};
   border: none;
-  background-color: ${({ $isSelected, $isInRange, $isRangeStart, $isRangeEnd, $isHovering }) => {
-    if ($isSelected || $isRangeStart || $isRangeEnd) return '#1d1d1f';
-    if ($isInRange) return 'rgba(29, 29, 31, 0.08)';
-    if ($isHovering) return 'rgba(29, 29, 31, 0.05)';
+  background-color: ${({ theme, $isSelected, $isInRange, $isRangeStart, $isRangeEnd, $isHovering }) => {
+    if ($isSelected || $isRangeStart || $isRangeEnd) return theme.colors.primary;
+    if ($isInRange) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.1)' : 'rgba(29, 29, 31, 0.08)';
+    if ($isHovering) return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(29, 29, 31, 0.05)';
     return 'transparent';
   }};
-  color: ${({ $isSelected, $isRangeStart, $isRangeEnd, $isCurrentMonth }) => {
+  color: ${({ theme, $isSelected, $isRangeStart, $isRangeEnd, $isCurrentMonth }) => {
     if ($isSelected || $isRangeStart || $isRangeEnd) return '#fff';
-    if (!$isCurrentMonth) return '#ccc';
-    return '#1d1d1f';
+    if (!$isCurrentMonth) return theme.colors.text.tertiary;
+    return theme.colors.text.primary;
   }};
   font-size: 0.875rem;
   font-weight: ${({ $isSelected, $isRangeStart, $isRangeEnd, $isToday }) =>
@@ -169,9 +169,9 @@ const DayButton = styled.button<{
   position: relative;
 
   &:hover {
-    background-color: ${({ $isSelected, $isRangeStart, $isRangeEnd }) => {
-      if ($isSelected || $isRangeStart || $isRangeEnd) return '#000';
-      return 'rgba(0, 0, 0, 0.08)';
+    background-color: ${({ theme, $isSelected, $isRangeStart, $isRangeEnd }) => {
+      if ($isSelected || $isRangeStart || $isRangeEnd) return theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC';
+      return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
     }};
     z-index: 1;
   }
@@ -189,7 +189,7 @@ const TodayIndicator = styled.div<{ $isSelected: boolean }>`
   transform: translate(-50%, -50%);
   width: ${({ $isSelected }) => ($isSelected ? '32px' : '28px')};
   height: ${({ $isSelected }) => ($isSelected ? '32px' : '28px')};
-  border: ${({ $isSelected }) => ($isSelected ? 'none' : '2px solid #1d1d1f')};
+  border: ${({ theme, $isSelected }) => ($isSelected ? 'none' : `2px solid ${theme.colors.primary}`)};
   border-radius: 50%;
   pointer-events: none;
   z-index: -1;

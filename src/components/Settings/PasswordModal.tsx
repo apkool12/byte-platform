@@ -23,13 +23,14 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 20px;
   padding: 2rem;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   position: relative;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const CloseButton = styled.button`
@@ -39,7 +40,7 @@ const CloseButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,15 +49,15 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
 const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 1.5rem;
 `;
 
@@ -74,7 +75,7 @@ const Label = styled.label`
   display: block;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 0.5rem;
 `;
 
@@ -82,22 +83,22 @@ const Input = styled.input`
   width: 100%;
   padding: 1rem 3rem 1rem 3rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.95rem;
   transition: all 0.2s;
   outline: none;
   box-sizing: border-box;
 
   &::placeholder {
-    color: #86868b;
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 
   &:focus {
-    background-color: #fff;
-    border-color: #1d1d1f;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -105,7 +106,7 @@ const IconWrapper = styled.div`
   position: absolute;
   left: 1rem;
   bottom: 1rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -119,7 +120,7 @@ const PasswordToggle = styled.button`
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -128,7 +129,7 @@ const PasswordToggle = styled.button`
   transition: color 0.2s;
 
   &:hover {
-    color: #1d1d1f;
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -142,16 +143,20 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   flex: 1;
   padding: 1rem;
   border-radius: 12px;
-  border: ${({ $primary }) => ($primary ? "none" : "1px solid rgba(0, 0, 0, 0.08)")};
-  background-color: ${({ $primary }) => ($primary ? "#1d1d1f" : "#fff")};
-  color: ${({ $primary }) => ($primary ? "#fff" : "#1d1d1f")};
+  border: ${({ theme, $primary }) => ($primary ? "none" : `1px solid ${theme.colors.border}`)};
+  background-color: ${({ theme, $primary }) => ($primary ? theme.colors.primary : theme.colors.surfaceOpaque)};
+  color: ${({ theme, $primary }) => ($primary ? "#fff" : theme.colors.text.primary)};
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? "#000" : "#f5f5f7")};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
+    };
   }
 
   &:disabled {
@@ -161,7 +166,7 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
 `;
 
 const ErrorMessage = styled.div`
-  color: #dc3545;
+  color: ${({ theme }) => theme.colors.error};
   font-size: 0.85rem;
   margin-top: -0.5rem;
 `;

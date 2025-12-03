@@ -41,10 +41,10 @@ const MonthNav = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
   padding: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const MonthTitle = styled.h2`
@@ -69,7 +69,11 @@ const NavBtn = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.08)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
@@ -80,28 +84,42 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border-radius: 12px;
-  border: 1px solid ${({ $primary }) => ($primary ? "transparent" : "rgba(0,0,0,0.08)")};
-  background-color: ${({ $primary }) => ($primary ? "#1d1d1f" : "#fff")};
-  color: ${({ $primary }) => ($primary ? "#fff" : "#1d1d1f")};
+  border: 1px solid ${({ theme, $primary }) => 
+    $primary ? "transparent" : theme.colors.border
+  };
+  background-color: ${({ theme, $primary }) => 
+    $primary ? theme.colors.primary : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $primary }) => 
+    $primary ? "#fff" : theme.colors.text.primary
+  };
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: ${({ $primary }) => ($primary ? "0 2px 8px rgba(0,0,0,0.1)" : "none")};
+  box-shadow: ${({ theme, $primary }) => 
+    $primary ? theme.shadows.small : "none"
+  };
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? "#000" : "#f5f5f7")};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
+    };
     transform: ${({ $primary }) => ($primary ? "translateY(-1px)" : "none")};
-    box-shadow: ${({ $primary }) => ($primary ? "0 4px 12px rgba(0,0,0,0.15)" : "none")};
+    box-shadow: ${({ theme, $primary }) => 
+      $primary ? theme.shadows.medium : "none"
+    };
   }
 `;
 
 const CalendarGrid = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const WeekDays = styled.div`
@@ -110,7 +128,7 @@ const WeekDays = styled.div`
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const WeekDay = styled.div`
@@ -135,23 +153,23 @@ const DateCell = styled(motion.div)<{ $isToday: boolean; $isCurrentMonth: boolea
   padding: 0.75rem;
   cursor: pointer;
   position: relative;
-  border: 2px solid ${({ $isToday, $isInRange, $isRangeStart, $isRangeEnd }) => {
-    if ($isToday) return '#1d1d1f';
-    if ($isRangeStart || $isRangeEnd) return '#1d1d1f';
+  border: 2px solid ${({ theme, $isToday, $isInRange, $isRangeStart, $isRangeEnd }) => {
+    if ($isToday) return theme.colors.primary;
+    if ($isRangeStart || $isRangeEnd) return theme.colors.primary;
     return 'transparent';
   }};
-  background-color: ${({ $isToday, $isInRange }) => {
-    if ($isToday) return '#f5f5f7';
-    if ($isInRange) return 'rgba(0, 0, 0, 0.02)';
+  background-color: ${({ theme, $isToday, $isInRange }) => {
+    if ($isToday) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.1)' : theme.colors.background;
+    if ($isInRange) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)';
     return 'transparent';
   }};
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: ${({ $isToday, $isInRange }) => {
-      if ($isToday) return '#e5e5ea';
-      if ($isInRange) return 'rgba(0, 0, 0, 0.04)';
-      return 'rgba(0, 0, 0, 0.02)';
+    background-color: ${({ theme, $isToday, $isInRange }) => {
+      if ($isToday) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.15)' : '#e5e5ea';
+      if ($isInRange) return theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)';
+      return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)';
     }};
     transform: scale(1.02);
   }
@@ -160,10 +178,10 @@ const DateCell = styled(motion.div)<{ $isToday: boolean; $isCurrentMonth: boolea
 const DateNumber = styled.div<{ $isToday: boolean; $isCurrentMonth: boolean }>`
   font-size: 0.95rem;
   font-weight: ${({ $isToday }) => ($isToday ? 700 : 500)};
-  color: ${({ $isCurrentMonth, $isToday }) => {
-    if ($isToday) return '#1d1d1f';
-    if (!$isCurrentMonth) return '#ccc';
-    return '#1d1d1f';
+  color: ${({ theme, $isCurrentMonth, $isToday }) => {
+    if ($isToday) return theme.colors.primary;
+    if (!$isCurrentMonth) return theme.colors.text.tertiary;
+    return theme.colors.text.primary;
   }};
   margin-bottom: 0.5rem;
 `;
@@ -179,7 +197,7 @@ const EventItem = styled(motion.div)`
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
-  background-color: #1d1d1f;
+  background-color: ${({ theme }) => theme.colors.primary};
   color: #fff;
   font-weight: 500;
   cursor: pointer;
@@ -189,7 +207,7 @@ const EventItem = styled(motion.div)`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #000;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC'};
     transform: translateX(2px);
   }
 `;

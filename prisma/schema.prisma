@@ -20,6 +20,7 @@ model User {
   active      Boolean   @default(true)
   approved    Boolean   @default(false) // 회장 승인 여부
   profileImage String?  @db.Text
+  emailNotificationEnabled Boolean @default(true) // 이메일 수신 동의
   createdAt   DateTime  @default(now())
   
   posts       Post[]

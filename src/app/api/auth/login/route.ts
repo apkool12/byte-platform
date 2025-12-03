@@ -20,13 +20,13 @@ export async function POST(request: NextRequest) {
     // 유효성 검사
     if (!email || !password) {
       return NextResponse.json(
-        { error: '이메일과 비밀번호를 입력해주세요.' },
+        { error: '이메일/이름과 비밀번호를 입력해주세요.' },
         { status: 400 }
       );
     }
 
-    // 사용자 찾기 (비밀번호 포함)
-    const user = await dataStore.getUserByEmailWithPassword(email);
+    // 사용자 찾기 (이메일 또는 이름, 비밀번호 포함)
+    const user = await dataStore.getUserByEmailOrNameWithPassword(email);
     if (!user) {
       return NextResponse.json(
         { error: '등록되지 않은 사용자입니다.' },

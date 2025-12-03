@@ -45,8 +45,8 @@ const SearchBar = styled.div`
 const SearchInput = styled.input`
   padding: 0.6rem 1rem 0.6rem 2.25rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   font-size: 0.9rem;
   width: 240px;
   transition: all 0.2s ease;
@@ -55,19 +55,23 @@ const SearchInput = styled.input`
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    box-shadow: 0 0 0 3px ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(62, 166, 255, 0.2)' 
+        : 'rgba(0, 122, 255, 0.1)'
+    };
     width: 280px;
   }
 
   &::placeholder {
-    color: #999;
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 `;
 
 const SearchIcon = styled(Search)`
   position: absolute;
   left: 0.75rem;
-  color: #999;
+  color: ${({ theme }) => theme.colors.text.tertiary};
   width: 16px;
   height: 16px;
 `;
@@ -79,9 +83,9 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   padding: 0.6rem 1rem;
   border-radius: 8px;
   border: 1px solid
-    ${({ $primary, theme }) => ($primary ? "transparent" : "rgba(0,0,0,0.08)")};
+    ${({ $primary, theme }) => ($primary ? "transparent" : theme.colors.border)};
   background-color: ${({ theme, $primary }) =>
-    $primary ? theme.colors.text.primary : "#fff"};
+    $primary ? theme.colors.primary : theme.colors.surfaceOpaque};
   color: ${({ theme, $primary }) =>
     $primary ? "#fff" : theme.colors.text.primary};
   font-size: 0.9rem;
@@ -90,16 +94,19 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ theme, $primary }) =>
-      $primary ? "#000" : "#f5f5f7"};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
+    };
   }
 `;
 
 const FilterDropdown = styled.select`
   padding: 0.6rem 2rem 0.6rem 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.9rem;
   font-weight: 500;
@@ -118,10 +125,10 @@ const FilterDropdown = styled.select`
 `;
 
 const TableContainer = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
   overflow: hidden;
 `;
 
@@ -134,11 +141,15 @@ const Table = styled.table`
 const Th = styled.th`
   text-align: left;
   padding: 1rem 1.5rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-weight: 500;
   font-size: 0.8rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: #fafafa;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
 `;
 
 const Tr = styled(motion.tr)`
@@ -150,7 +161,11 @@ const Tr = styled(motion.tr)`
   }
 
   &:hover {
-    background-color: #f5f5f7;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.08)' 
+        : '#f5f5f7'
+    };
   }
 `;
 
@@ -158,7 +173,7 @@ const Td = styled.td`
   padding: 1rem 1.5rem;
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   vertical-align: middle;
 `;
 
@@ -176,6 +191,8 @@ const RoleBadge = styled.span<{ $role: string }>`
         return `background-color: #424245; color: #fff;`;
       case "부장":
         return `background-color: #e5e5e5; color: #1D1D1F;`;
+      case "스태프":
+        return `background-color: #6366f1; color: #fff;`;
       default:
         return `background-color: #f5f5f7; color: #86868b; border: 1px solid rgba(0,0,0,0.05);`;
     }
@@ -187,7 +204,7 @@ const StatusBadge = styled.span<{ $active: boolean }>`
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: ${({ $active }) => ($active ? "#1D1D1F" : "#86868b")};
+  color: ${({ theme, $active }) => ($active ? theme.colors.text.primary : theme.colors.text.secondary)};
 
   &::before {
     content: "";
@@ -195,7 +212,7 @@ const StatusBadge = styled.span<{ $active: boolean }>`
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: ${({ $active }) => ($active ? "#34C759" : "#FF3B30")};
+    background-color: ${({ theme, $active }) => ($active ? theme.colors.success : theme.colors.error)};
   }
 `;
 
@@ -213,19 +230,25 @@ const ActionButtons = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 `;
 
 const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: none;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  white-space: nowrap;
+  min-width: fit-content;
   background-color: ${({ $primary, $danger }) => {
     if ($primary) return "#1D1D1F";
     if ($danger) return "#FF3B30";
@@ -237,12 +260,18 @@ const ActionButton = styled.button<{ $primary?: boolean; $danger?: boolean }>`
   }};
 
   &:hover {
-    opacity: 0.8;
+    opacity: 0.85;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   &:active {
     transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    flex-shrink: 0;
   }
 `;
 
@@ -261,32 +290,40 @@ const AccessDeniedIcon = styled.div`
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #f5f5f7;
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: 1rem;
 `;
 
 const AccessDeniedTitle = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
 `;
 
 const AccessDeniedText = styled.p`
   font-size: 1rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin: 0;
 `;
 
 const InfoText = styled.div`
   font-size: 0.85rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   padding: 0.5rem 1rem;
-  background-color: #f5f5f7;
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
   border-radius: 8px;
 `;
 
@@ -455,7 +492,7 @@ export default function MembersPage() {
                     <Td>
                       <RoleBadge $role={member.role}>{member.role}</RoleBadge>
                     </Td>
-                    <Td>{member.department}</Td>
+                    <Td>{member.role === '스태프' ? '-' : member.department}</Td>
                     <Td style={{ color: "#86868b" }}>{member.phone || "-"}</Td>
                     <Td>
                       <StatusBadge $active={member.active}>
@@ -467,18 +504,22 @@ export default function MembersPage() {
                         승인 대기
                       </ApprovalBadge>
                     </Td>
-                    <Td>
+                    <Td style={{ width: "140px", minWidth: "140px" }}>
                       <ActionButtons onClick={(e) => e.stopPropagation()}>
                         <ActionButton
                           $primary
+                          type="button"
                           onClick={(e) => handleApprove(member.id, true, e)}
+                          title="승인"
                         >
                           <Check size={14} />
                           승인
                         </ActionButton>
                         <ActionButton
                           $danger
+                          type="button"
                           onClick={(e) => handleApprove(member.id, false, e)}
+                          title="거절"
                         >
                           <X size={14} />
                           거절
