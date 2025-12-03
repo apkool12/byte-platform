@@ -37,6 +37,13 @@ const ModalContainer = styled(motion.div)`
   overflow-y: auto;
   max-height: 90vh;
   border: 1px solid ${({ theme }) => theme.colors.border};
+  
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const CloseButton = styled.button`
