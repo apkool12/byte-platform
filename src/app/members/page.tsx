@@ -204,7 +204,7 @@ const StatusBadge = styled.span<{ $active: boolean }>`
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: ${({ $active }) => ($active ? "#1D1D1F" : "#86868b")};
+  color: ${({ theme, $active }) => ($active ? theme.colors.text.primary : theme.colors.text.secondary)};
 
   &::before {
     content: "";
@@ -212,7 +212,7 @@ const StatusBadge = styled.span<{ $active: boolean }>`
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: ${({ $active }) => ($active ? "#34C759" : "#FF3B30")};
+    background-color: ${({ theme, $active }) => ($active ? theme.colors.success : theme.colors.error)};
   }
 `;
 
