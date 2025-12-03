@@ -31,15 +31,23 @@ const Overlay = styled(motion.div)`
 `;
 
 const ModalContainer = styled(motion.div)`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 20px;
   padding: 2rem;
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: ${({ theme }) => theme.shadows.large};
   position: relative;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const CloseButton = styled.button`
@@ -49,7 +57,7 @@ const CloseButton = styled.button`
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,15 +66,15 @@ const CloseButton = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #1d1d1f;
+    background-color: ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
 const Title = styled.h2`
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 1.5rem;
 `;
 
@@ -85,23 +93,23 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const Input = styled.input`
   padding: 0.875rem 1rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fbfbfd;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.95rem;
   transition: all 0.2s;
   outline: none;
 
   &:focus {
-    background-color: #fff;
-    border-color: #1d1d1f;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.background === '#0F0F0F' ? 'rgba(62, 166, 255, 0.2)' : 'rgba(0, 0, 0, 0.05)'};
   }
 `;
 
@@ -122,18 +130,18 @@ const Button = styled(motion.button)<{ $primary?: boolean; $danger?: boolean }>`
   flex: 1;
   padding: 1rem;
   border-radius: 12px;
-  border: ${({ $primary, $danger }) => {
+  border: ${({ theme, $primary, $danger }) => {
     if ($primary || $danger) return "none";
-    return "1px solid rgba(0, 0, 0, 0.08)";
+    return `1px solid ${theme.colors.border}`;
   }};
-  background-color: ${({ $primary, $danger }) => {
-    if ($danger) return "#dc3545";
-    if ($primary) return "#1d1d1f";
-    return "#fff";
+  background-color: ${({ theme, $primary, $danger }) => {
+    if ($danger) return theme.colors.error;
+    if ($primary) return theme.colors.primary;
+    return theme.colors.surfaceOpaque;
   }};
-  color: ${({ $primary, $danger }) => {
+  color: ${({ theme, $primary, $danger }) => {
     if ($primary || $danger) return "#fff";
-    return "#1d1d1f";
+    return theme.colors.text.primary;
   }};
   font-size: 0.95rem;
   font-weight: 600;
@@ -141,10 +149,10 @@ const Button = styled(motion.button)<{ $primary?: boolean; $danger?: boolean }>`
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $primary, $danger }) => {
+    background-color: ${({ theme, $primary, $danger }) => {
       if ($danger) return "#c82333";
-      if ($primary) return "#000";
-      return "#f5f5f7";
+      if ($primary) return theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC';
+      return theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7';
     }};
   }
 
