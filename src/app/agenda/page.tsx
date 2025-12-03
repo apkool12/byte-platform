@@ -46,8 +46,8 @@ const SearchBar = styled.div`
 const SearchInput = styled.input`
   padding: 0.6rem 1rem 0.6rem 2.25rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   font-size: 0.9rem;
   width: 240px;
   transition: all 0.2s ease;
@@ -55,13 +55,17 @@ const SearchInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.colors.text.primary};
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    border-color: ${({ theme }) => theme.colors.primary};
+    box-shadow: 0 0 0 3px ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(62, 166, 255, 0.2)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
     width: 280px;
   }
 
   &::placeholder {
-    color: #999;
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 `;
 
@@ -79,16 +83,26 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   gap: 0.5rem;
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  border: ${({ $primary }) => ($primary ? "transparent" : "1px solid rgba(0,0,0,0.08)")};
-  background-color: ${({ $primary }) => ($primary ? "#1d1d1f" : "#fff")};
-  color: ${({ $primary }) => ($primary ? "#fff" : "#1d1d1f")};
+  border: ${({ theme, $primary }) => 
+    $primary ? "transparent" : `1px solid ${theme.colors.border}`
+  };
+  background-color: ${({ theme, $primary }) => 
+    $primary ? theme.colors.primary : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $primary }) => 
+    $primary ? "#fff" : theme.colors.text.primary
+  };
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? "#000" : "#f5f5f7")};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
+    };
   }
 `;
 
@@ -97,22 +111,30 @@ const FilterTabs = styled.div`
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const FilterTab = styled(motion.button)<{ $active: boolean }>`
   padding: 0.5rem 1rem;
   border-radius: 8px;
   border: none;
-  background-color: ${({ $active }) => ($active ? "#1d1d1f" : "transparent")};
-  color: ${({ $active }) => ($active ? "#fff" : "#86868b")};
+  background-color: ${({ theme, $active }) => 
+    $active ? theme.colors.primary : "transparent"
+  };
+  color: ${({ theme, $active }) => 
+    $active ? "#fff" : theme.colors.text.secondary
+  };
   font-size: 0.9rem;
   font-weight: ${({ $active }) => ($active ? 600 : 500)};
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $active }) => ($active ? "#000" : "rgba(0,0,0,0.05)")};
+    background-color: ${({ theme, $active }) => 
+      $active 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0,0,0,0.05)')
+    };
   }
 `;
 
@@ -124,17 +146,17 @@ const AgendaGrid = styled.div`
 `;
 
 const AgendaCard = styled(motion.div)<{ $status: string; $priority: string }>`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  box-shadow: ${({ theme }) => theme.shadows.small};
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: ${({ theme }) => theme.shadows.medium};
     transform: translateY(-2px);
   }
 `;

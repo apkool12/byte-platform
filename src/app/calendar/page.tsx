@@ -41,10 +41,10 @@ const MonthNav = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 12px;
   padding: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const MonthTitle = styled.h2`
@@ -69,7 +69,11 @@ const NavBtn = styled.button`
   transition: all 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : 'rgba(0, 0, 0, 0.05)'
+    };
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
@@ -80,28 +84,42 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border-radius: 12px;
-  border: 1px solid ${({ $primary }) => ($primary ? "transparent" : "rgba(0,0,0,0.08)")};
-  background-color: ${({ $primary }) => ($primary ? "#1d1d1f" : "#fff")};
-  color: ${({ $primary }) => ($primary ? "#fff" : "#1d1d1f")};
+  border: 1px solid ${({ theme, $primary }) => 
+    $primary ? "transparent" : theme.colors.border
+  };
+  background-color: ${({ theme, $primary }) => 
+    $primary ? theme.colors.primary : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $primary }) => 
+    $primary ? "#fff" : theme.colors.text.primary
+  };
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: ${({ $primary }) => ($primary ? "0 2px 8px rgba(0,0,0,0.1)" : "none")};
+  box-shadow: ${({ theme, $primary }) => 
+    $primary ? theme.shadows.small : "none"
+  };
 
   &:hover {
-    background-color: ${({ $primary }) => ($primary ? "#000" : "#f5f5f7")};
+    background-color: ${({ theme, $primary }) => 
+      $primary 
+        ? (theme.colors.background === '#0F0F0F' ? '#5BB0FF' : '#0066CC')
+        : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
+    };
     transform: ${({ $primary }) => ($primary ? "translateY(-1px)" : "none")};
-    box-shadow: ${({ $primary }) => ($primary ? "0 4px 12px rgba(0,0,0,0.15)" : "none")};
+    box-shadow: ${({ theme, $primary }) => 
+      $primary ? theme.shadows.medium : "none"
+    };
   }
 `;
 
 const CalendarGrid = styled.div`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const WeekDays = styled.div`

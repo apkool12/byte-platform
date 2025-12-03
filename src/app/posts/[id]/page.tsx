@@ -25,9 +25,9 @@ const BackButton = styled(motion.button)`
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -35,7 +35,11 @@ const BackButton = styled(motion.button)`
   transition: all 0.2s;
 
   &:hover {
-    background-color: #f5f5f7;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.05)' 
+        : theme.colors.background
+    };
   }
 
   svg {
@@ -45,23 +49,23 @@ const BackButton = styled(motion.button)`
 `;
 
 const PostContainer = styled(motion.article)`
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: ${({ theme }) => theme.shadows.small};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const PostHeader = styled.div`
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   margin-bottom: 2rem;
 `;
 
 const PostTitle = styled.h1`
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   line-height: 1.4;
   margin-bottom: 1rem;
   display: flex;
@@ -74,7 +78,7 @@ const PostMeta = styled.div`
   align-items: center;
   gap: 1rem;
   font-size: 0.9rem;
-  color: #86868b;
+  color: ${({ theme }) => theme.colors.text.secondary};
   flex-wrap: wrap;
 `;
 
@@ -114,7 +118,7 @@ const CategoryBadge = styled.span<{ $category: string }>`
 const PostContent = styled.div`
   font-size: 1rem;
   line-height: 1.8;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   min-height: 200px;
 
   p {
@@ -134,7 +138,7 @@ const PostContent = styled.div`
   }
 
   a {
-    color: #007aff;
+    color: ${({ theme }) => theme.colors.primary};
     text-decoration: none;
 
     &:hover {
@@ -165,7 +169,7 @@ const ActionButtons = styled.div`
   gap: 0.75rem;
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const ActionButton = styled(motion.button)<{ $danger?: boolean }>`
@@ -174,31 +178,41 @@ const ActionButton = styled(motion.button)<{ $danger?: boolean }>`
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   border-radius: 10px;
-  border: 1px solid
-    ${({ $danger }) => ($danger ? "#dc3545" : "rgba(0, 0, 0, 0.08)")};
-  background-color: ${({ $danger }) => ($danger ? "#dc3545" : "#fff")};
-  color: ${({ $danger }) => ($danger ? "#fff" : "#1d1d1f")};
+  border: 1px solid ${({ theme, $danger }) => 
+    $danger ? theme.colors.error : theme.colors.border
+  };
+  background-color: ${({ theme, $danger }) => 
+    $danger ? theme.colors.error : theme.colors.surfaceOpaque
+  };
+  color: ${({ theme, $danger }) => 
+    $danger ? "#fff" : theme.colors.text.primary
+  };
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: ${({ $danger }) => ($danger ? "#c82333" : "#f5f5f7")};
-    border-color: ${({ $danger }) => ($danger ? "#c82333" : "#1d1d1f")};
+    background-color: ${({ theme, $danger }) => 
+      $danger ? "#c82333" : 
+      (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.05)' : theme.colors.background)
+    };
+    border-color: ${({ theme, $danger }) => 
+      $danger ? "#c82333" : theme.colors.text.primary
+    };
   }
 `;
 
 const AttachmentsSection = styled.div`
   margin-top: 2rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const AttachmentsTitle = styled.h3`
   font-size: 1rem;
   font-weight: 600;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: 1rem;
 `;
 
@@ -213,14 +227,18 @@ const AttachmentItem = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-  background-color: #f5f5f7;
+  background-color: ${({ theme }) => 
+    theme.colors.background === '#0F0F0F' 
+      ? theme.colors.surfaceOpaque 
+      : theme.colors.background
+  };
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 const AttachmentName = styled.span`
   font-size: 0.9rem;
-  color: #1d1d1f;
+  color: ${({ theme }) => theme.colors.text.primary};
   flex: 1;
 `;
 
@@ -230,15 +248,19 @@ const DownloadButton = styled.button`
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-  color: #1d1d1f;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background-color: ${({ theme }) => theme.colors.surfaceOpaque};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background-color: #e5e5ea;
+    background-color: ${({ theme }) => 
+      theme.colors.background === '#0F0F0F' 
+        ? 'rgba(255, 255, 255, 0.1)' 
+        : theme.colors.background
+    };
   }
 
   svg {
