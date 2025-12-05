@@ -290,34 +290,40 @@ export default function PostModal({ isOpen, onClose, onSubmit, members = [], ini
   const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {
-    if (initialData && isOpen) {
-      setFormData({
-        title: initialData.title || '',
-        content: initialData.content || '',
-        category: initialData.category || '일반',
-        pinned: initialData.pinned || false,
-        permission: initialData.permission ? {
-          read: initialData.permission.read,
-          allowedDepartments: initialData.permission.allowedDepartments || [],
-        } : {
-          read: '전체',
-          allowedDepartments: [],
-        },
-      });
-    } else if (!initialData && isOpen) {
-      // 새 게시글 작성 시 초기화
-      setFormData({
-        title: '',
-        content: '',
-        category: '일반',
-        pinned: false,
-        permission: {
-          read: '전체',
-          allowedDepartments: [],
-        },
-      });
+    if (isOpen) {
+      if (initialData) {
+        // 수정 모드: initialData로 폼 채우기
+        setFormData({
+          title: initialData.title || '',
+          content: initialData.content || '',
+          category: initialData.category || '일반',
+          pinned: initialData.pinned || false,
+          permission: initialData.permission ? {
+            read: initialData.permission.read,
+            allowedDepartments: initialData.permission.allowedDepartments || [],
+          } : {
+            read: '전체',
+            allowedDepartments: [],
+          },
+        });
+        // 첨부파일은 수정 시에는 기존 파일을 유지 (새로 추가만 가능)
+        setAttachments([]);
+      } else {
+        // 새 게시글 작성 시 초기화
+        setFormData({
+          title: '',
+          content: '',
+          category: '일반',
+          pinned: false,
+          permission: {
+            read: '전체',
+            allowedDepartments: [],
+          },
+        });
+        setAttachments([]);
+      }
     }
-  }, [initialData, isOpen]);
+  }, [initialData?.id, isOpen]); // initialData.id를 사용하여 실제 데이터 변경 감지
 
   const isContentEmpty = (html: string) => {
     const div = document.createElement('div');

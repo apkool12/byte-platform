@@ -347,28 +347,58 @@ export default function EventModal({
   });
 
   useEffect(() => {
-    if (event) {
-      setFormData({
-        title: event.title,
-        description: event.description || "",
-        date: event.date,
-        endDate: event.endDate || "",
-        startTime: event.startTime || "09:00",
-        endTime: event.endTime || "",
-        location: event.location || "",
-        category: event.category || "일정",
-        postId: event.postId,
-        isPeriod: !!event.endDate,
-        noTime: !event.startTime,
-        allowedDepartments: event.allowedDepartments || [],
-      });
-    } else if (selectedDate) {
-      setFormData((prev) => ({
-        ...prev,
-        date: format(selectedDate, "yyyy-MM-dd"),
-      }));
+    if (isOpen) {
+      if (event) {
+        // 수정 모드: event 데이터로 폼 채우기
+        setFormData({
+          title: event.title,
+          description: event.description || "",
+          date: event.date,
+          endDate: event.endDate || "",
+          startTime: event.startTime || "09:00",
+          endTime: event.endTime || "",
+          location: event.location || "",
+          category: event.category || "일정",
+          postId: event.postId,
+          isPeriod: !!event.endDate,
+          noTime: !event.startTime,
+          allowedDepartments: event.allowedDepartments || [],
+        });
+      } else if (selectedDate) {
+        // 새 일정 추가: 선택된 날짜로 초기화
+        setFormData({
+          title: "",
+          description: "",
+          date: format(selectedDate, "yyyy-MM-dd"),
+          endDate: "",
+          startTime: "09:00",
+          endTime: "",
+          location: "",
+          category: "일정",
+          postId: undefined,
+          isPeriod: false,
+          noTime: false,
+          allowedDepartments: [],
+        });
+      } else {
+        // 날짜도 없으면 오늘 날짜로 초기화
+        setFormData({
+          title: "",
+          description: "",
+          date: format(new Date(), "yyyy-MM-dd"),
+          endDate: "",
+          startTime: "09:00",
+          endTime: "",
+          location: "",
+          category: "일정",
+          postId: undefined,
+          isPeriod: false,
+          noTime: false,
+          allowedDepartments: [],
+        });
+      }
     }
-  }, [event, selectedDate]);
+  }, [event?.id, selectedDate, isOpen]); // event.id를 사용하여 실제 데이터 변경 감지
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
