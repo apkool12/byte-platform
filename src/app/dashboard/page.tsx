@@ -20,6 +20,13 @@ const HeaderSection = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const WelcomeText = styled.div`
@@ -49,11 +56,12 @@ const BentoGrid = styled(motion.div)`
   grid-template-rows: auto auto;
   gap: 1.5rem;
   
-  @media (max-width: 1200px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
     grid-template-columns: repeat(2, 1fr);
   }
-  @media (max-width: 768px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 `;
 
@@ -69,6 +77,12 @@ const Card = styled(motion.div)<{ $colSpan?: number; $rowSpan?: number; $bg?: st
   color: ${({ theme, $dark }) => $dark ? '#FFFFFF' : theme.colors.text.primary};
   cursor: pointer;
   border: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    grid-column: span 1 !important;
+    grid-row: auto !important;
+    padding: 1.25rem;
+  }
 `;
 
 const StatHeader = styled.div`

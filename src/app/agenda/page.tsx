@@ -22,6 +22,13 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const Title = styled.h1`
@@ -35,12 +42,22 @@ const Controls = styled.div`
   display: flex;
   gap: 0.75rem;
   align-items: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 const SearchBar = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+  }
 `;
 
 const SearchInput = styled.input`
@@ -66,6 +83,13 @@ const SearchInput = styled.input`
 
   &::placeholder {
     color: ${({ theme }) => theme.colors.text.tertiary};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+    &:focus {
+      width: 100%;
+    }
   }
 `;
 
@@ -104,6 +128,11 @@ const Button = styled(motion.button)<{ $primary?: boolean }>`
         : (theme.colors.background === '#0F0F0F' ? 'rgba(255, 255, 255, 0.08)' : '#f5f5f7')
     };
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+  }
 `;
 
 const FilterTabs = styled.div`
@@ -112,6 +141,15 @@ const FilterTabs = styled.div`
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 const FilterTab = styled(motion.button)<{ $active: boolean }>`
@@ -128,6 +166,7 @@ const FilterTab = styled(motion.button)<{ $active: boolean }>`
   font-weight: ${({ $active }) => ($active ? 600 : 500)};
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 
   &:hover {
     background-color: ${({ theme, $active }) => 
@@ -140,9 +179,18 @@ const FilterTab = styled(motion.button)<{ $active: boolean }>`
 
 const AgendaGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
   margin-bottom: 2rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 `;
 
 const AgendaCard = styled(motion.div)<{ $status: string; $priority: string }>`

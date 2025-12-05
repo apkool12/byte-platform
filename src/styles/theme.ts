@@ -31,6 +31,11 @@ export const lightTheme = {
   blur: {
     default: 'blur(20px)',
   },
+  breakpoints: {
+    mobile: '768px',
+    tablet: '1024px',
+    desktop: '1440px',
+  },
 };
 
 export const darkTheme = {
@@ -63,6 +68,11 @@ export const darkTheme = {
   },
   blur: {
     default: 'blur(20px)',
+  },
+  breakpoints: {
+    mobile: '768px',
+    tablet: '1024px',
+    desktop: '1440px',
   },
 };
 

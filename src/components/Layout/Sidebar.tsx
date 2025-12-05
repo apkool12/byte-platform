@@ -22,7 +22,12 @@ const shimmer = keyframes`
   }
 `;
 
-const SidebarContainer = styled.aside`
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+const SidebarContainer = styled.aside<{ $isOpen?: boolean }>`
   width: 260px;
   height: calc(100vh - 64px);
   position: fixed;
@@ -32,6 +37,39 @@ const SidebarContainer = styled.aside`
   flex-direction: column;
   padding: 2rem 1.25rem;
   z-index: 90;
+  transition: transform 0.3s ease-in-out;
+  background-color: ${({ theme }) => theme.colors.background};
+  transform: translateX(0);
+
+  /* 모바일에서만 슬라이드 동작 */
+  @media (max-width: 768px) {
+    transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(-100%)')};
+    box-shadow: ${({ theme, $isOpen }) => ($isOpen ? theme.shadows.large : 'none')};
+  }
+
+  /* 데스크탑에서는 항상 표시 (모바일 미디어 쿼리 이후에 적용) */
+  @media (min-width: 769px) {
+    transform: translateX(0) !important;
+  }
+`;
+
+const Overlay = styled.div<{ $isOpen?: boolean }>`
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 89;
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+  pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
+  transition: opacity 0.3s ease-in-out;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: block;
+  }
 `;
 
 const SidebarBackground = styled.div`
@@ -111,7 +149,7 @@ const NavItem = styled(Link)<{ $active?: boolean }>`
   }
 `;
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [canManage, setCanManage] = useState(false);
 
@@ -119,38 +157,51 @@ export default function Sidebar() {
     setCanManage(canManageMembers());
   }, []);
 
+  // 모바일에서 경로 변경 시 사이드바 닫기
+  useEffect(() => {
+    if (onClose && typeof window !== 'undefined') {
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile && isOpen) {
+        onClose();
+      }
+    }
+  }, [pathname]); // onClose와 isOpen을 의존성에서 제거하여 무한 루프 방지
+
   return (
-    <SidebarContainer>
-      <SidebarBackground />
-      <SidebarGlow />
-      <NavList>
-        <NavItem href="/dashboard" $active={pathname === "/dashboard"}>
-          <Home size={20} />
-          <span>대시보드</span>
-        </NavItem>
-        <NavItem href="/posts" $active={pathname === "/posts"}>
-          <FileText size={20} />
-          <span>게시판</span>
-        </NavItem>
-        <NavItem href="/calendar" $active={pathname === "/calendar"}>
-          <Calendar size={20} />
-          <span>일정</span>
-        </NavItem>
-        <NavItem href="/agenda" $active={pathname === "/agenda"}>
-          <Zap size={20} />
-          <span>안건</span>
-        </NavItem>
-        {canManage && (
-          <NavItem href="/members" $active={pathname === "/members"}>
-            <Users size={20} />
-            <span>부원 관리</span>
+    <>
+      <Overlay $isOpen={isOpen} onClick={onClose} />
+      <SidebarContainer $isOpen={isOpen}>
+        <SidebarBackground />
+        <SidebarGlow />
+        <NavList>
+          <NavItem href="/dashboard" $active={pathname === "/dashboard"}>
+            <Home size={20} />
+            <span>대시보드</span>
           </NavItem>
-        )}
-        <NavItem href="/settings" $active={pathname === "/settings"}>
-          <Settings size={20} />
-          <span>설정</span>
-        </NavItem>
-      </NavList>
-    </SidebarContainer>
+          <NavItem href="/posts" $active={pathname === "/posts"}>
+            <FileText size={20} />
+            <span>게시판</span>
+          </NavItem>
+          <NavItem href="/calendar" $active={pathname === "/calendar"}>
+            <Calendar size={20} />
+            <span>일정</span>
+          </NavItem>
+          <NavItem href="/agenda" $active={pathname === "/agenda"}>
+            <Zap size={20} />
+            <span>안건</span>
+          </NavItem>
+          {canManage && (
+            <NavItem href="/members" $active={pathname === "/members"}>
+              <Users size={20} />
+              <span>부원 관리</span>
+            </NavItem>
+          )}
+          <NavItem href="/settings" $active={pathname === "/settings"}>
+            <Settings size={20} />
+            <span>설정</span>
+          </NavItem>
+        </NavList>
+      </SidebarContainer>
+    </>
   );
 }
